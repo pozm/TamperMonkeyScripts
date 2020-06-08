@@ -96,7 +96,7 @@ function claim() {
 
 $(function() {
     'use strict';
-
+    
     let buttons = document.getElementsByClassName("field is-grouped")[0]
     let button = buttons.children[0]
     let newb = buttons.appendChild(button.cloneNode(true))
