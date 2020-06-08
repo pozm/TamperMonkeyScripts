@@ -4,8 +4,8 @@
 // @version      0.1
 // @description  Title
 // @author       Pozm
-// @updateURL    
-// @downloadURL  
+// @updateURL    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Agent.js
+// @downloadURL  https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Agent.js
 // @match        http*://*.synapsesupport.io/agent/*
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
 // @grant        GM_setValue

@@ -4,8 +4,8 @@
 // @version      0.2
 // @description  Title
 // @author       Pozm
-// @updateURL    https://gist.githubusercontent.com/pozm/d93d87151890755b09f757c42cc2b411/raw/Synapse%2520x%2520ticket.js
-// @downloadURL  https://gist.githubusercontent.com/pozm/d93d87151890755b09f757c42cc2b411/raw/Synapse%2520x%2520ticket.js
+// @updateURL    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Ticket.js
+// @downloadURL  https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Ticket.js
 // @match        http*://*.synapsesupport.io/tickets/
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
 // @grant        GM_setValue
@@ -16,6 +16,7 @@
 
 const refreshtimer = 10
 const locale = 'en-GB'
+const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 let GetData;
 
 // removes limit on showing how many boxes per line. you can remove this if you dislike.
@@ -63,6 +64,14 @@ function fixTIme(element)
     element.innerHTML = full
 
 }
+
+function GetCurrentAgent() 
+{
+
+    return document.getElementsByClassName('content')[0].firstElementChild.innerHTML.slice(14,-1).trim()
+    
+}
+
 const getDataFromBox = (box) => 
 {
 
@@ -84,7 +93,7 @@ const getBoxFromId = (id,doc) => {
 
 }
 //Tickets.
-const CheckForTickets = (doc,newDoc) => {
+const CheckForTickets = async (doc,newDoc) => {
     let ids   = []
     let responses = []
     
@@ -144,8 +153,21 @@ const CheckForTickets = (doc,newDoc) => {
         GM_notification({title:'Synapse x',text:`There are ${responses.length} new replies on the support website!`, image:ImageUrl,timeout :4e3})
 
     }
+    for (let Deleted of del) 
+    {
+
+        let data = await GetData(Deleted)
+        console.log(data);
+        if (!data) continue;
+        if (data.Agent == GetCurrentAgent())
+        {
+
+            GM_notification({title:'Synapse x',text:`${data.User} Closed ${data.Id}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
+
+        }
 
 
+    }
     GM_setValue('ids',ids)
 }
 
@@ -166,8 +188,10 @@ const UpdateBody = () => {
 }
 
 $(function() {
-
-
+    let b = async () => {
+    let s = await $.get('https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.GetData.js')
+    GetData = new AsyncFunction(s)
+    };b()
 
     //Ticket refreshing fix
 
