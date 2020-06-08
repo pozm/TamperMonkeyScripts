@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Synapse support ticket master.
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      1.2
 // @description  Title
 // @author       Pozm
 // @updateURL    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Ticket.js
@@ -196,6 +196,9 @@ const UpdateBody = () => {
 }
 
 $(function() {
+
+    if (!GM_getValue('ran')) GM_notification({title:'Synapse x Script',text:`It seems like this is your first time using this script, make sure to enable refreshing to get notifications on new tickets.`,timeout :7e3})
+    GM_setValue('ran',true)
     let b = async () => {
     let s = await $.get('https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.GetData.js')
     GetData = new AsyncFunction(s)
