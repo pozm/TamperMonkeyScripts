@@ -17,7 +17,7 @@
 const refreshtimer = 10
 const locale = 'en-GB'
 
-// removes limit on showing how many boxes per line.
+// removes limit on showing how many boxes per line. you can remove this if you dislike.
 GM_addStyle ( `
     .container {
     max-width: max-content;
@@ -51,74 +51,98 @@ function fixTIme(element)
 
     let time = element.innerHTML
     let timed = time.match(timeregex)
+    if (!timed) return
     timed.groups.hours = timed.groups.hours == '12'? 0 : timed.groups.hours
     timed.groups.hours = timed.groups.meridian == 'PM'? parseInt(timed.groups.hours,10)+12 : parseInt(timed.groups.hours,10)
     let newtime = `${timed.groups.month} ${timed.groups.day} ${timed.groups.year} ${timed.groups.hours}:${timed.groups.minutes}:${timed.groups.seconds} GMT-0400`
     let timeparsed = new Date( Date.parse(newtime))
     let datestring = timeparsed.toLocaleString(locale)
-    console.log(datestring,timeparsed)
     let time12h = tConvert(datestring.split(' ')[1] )
     let full = datestring.split(' ')[0] + ' ' + time12h
     element.innerHTML = full
 
 }
+const getDataFromBox = (box) => 
+{
 
+    let id = box.children[0].firstElementChild.innerHTML
+    let User = box.children[0].childNodes[1].textContent.slice(3)
+    let HasResponded = box.children[0].children[1] ? true : false
+    let TicketType = box.children[1].lastElementChild.innerHTML
+    let agent = box.children[4].lastElementChild.innerHTML
 
+    let Opened = box.children[2].firstElementChild
+    let LastUpdated = box.children[3].firstElementChild
+
+    return {Id : id, User : User, TicketType: TicketType, Agent : agent, Opened : Opened, LastUpdate : LastUpdated, Responded : HasResponded}
+}
+const getBoxFromId = (id,doc) => {
+    if (doc) doc.getElementById(id) ?? null
+
+    return document.getElementById(id) ?? null
+
+}
 //Tickets.
-const CheckForTickets = () => {
-    let ids   = {}
-    let boxes = document.getElementsByClassName("columns is-mobile is-multiline")[0].children
-    console.log(boxes)
-    for (let box of boxes) {
-        box = box.firstElementChild
-        console.log(box)
+const CheckForTickets = (doc,newDoc) => {
+    let ids   = []
+    let responses = []
+    
+    let newBoxes 
+    if (newDoc)  newBoxes = newDoc.getElementsByClassName("columns is-mobile is-multiline")[0]
+    let boxesb = doc.getElementsByClassName("columns is-mobile is-multiline")[0]
+    if (newDoc) boxesb.parentNode.replaceChild(newBoxes,boxesb)
+    let boxes = newBoxes? newBoxes.children : boxesb.children
+
+    for (let boxi in boxes) 
+    {
+        let box = boxes[boxi].firstElementChild
         if (! box) continue;
-
-        let id = box.children[0].innerHTML
-        ids = {...ids,[id]:box}
-        fixTIme( box.children[2].firstElementChild )
-        fixTIme( box.children[3].firstElementChild )
-
+        let data = getDataFromBox(box)
+        box.id = data.Id
+        ids = [...ids,data.Id]
+        if (data.Responded) responses = [...responses,data.Id]
+        fixTIme( data.Opened )
+        fixTIme( data.LastUpdate )
     }
-
-    console.log(ids)
 
     function geturl(id) {
         return 'https://synapsesupport.io/agent/?id='+id
     }
-
-    let old = GM_getValue('ids')
-    let bkup = ids
+    if (!GM_getValue('ids')) GM_setValue('ids',ids)
     let filtered = GM_getValue('ids').filter(v=> ids.indexOf(v) >= 0)
     let del = GM_getValue('ids').filter(v=>filtered.indexOf(v) == -1)
     let neww = ids.filter(v=>filtered.indexOf(v) == -1)
+
+    const ImageUrl = "https://synapsesupport.io/static/synapselogonew_transparent_w.png"
+
     if (neww.length == 1) {
 
 
         console.log('Ticket URL :',geturl(neww[0]))
-        GM_notification({title:'Synapse x',text:`New support ticket! ${neww[0]}`,onclick: () =>{ window.open(geturl(neww[0])) }, image:'https://loukamb.github.io/SynapseX/LogoWhite.png',timeout :7e3})
+        GM_notification({title:'Synapse x',text:`New support ticket! ${neww[0]}`,onclick: () =>{ window.open(geturl(neww[0])) }, image:ImageUrl,timeout :7e3})
         console.log('New!')
 
     } else if (neww.length > 1) {
 
 
         console.log(`${neww.length} new tickets!`)
-        GM_notification({title:'Synapse x',text:`There are ${neww.length} new tickets on the support website!`, image:'https://loukamb.github.io/SynapseX/LogoWhite.png',timeout :7e3})
+        GM_notification({title:'Synapse x',text:`There are ${neww.length} new tickets on the support website!`, image:ImageUrl,timeout :4e3})
 
     }
-    console.log('New : ',neww)
-    console.log('Removed : ',del)
+    
+    if (responses.length == 1) {
+        let id = responses[0]
+        let box = getBoxFromId(id,newDoc)
+        if (!box) return console.log('Unable to get box from id :'+id);
+        let data = getDataFromBox(box)
+        console.log('sending notif')
+        GM_notification({title:'Synapse x',text:`New reply from ${data.User}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
 
-    let Rep = $( ".tag" );
+    } else if (responses.length > 1) {
 
-    if (Rep.Length >= 1)
-    {
-
-        console.log(Rep[0].parent())
+        GM_notification({title:'Synapse x',text:`There are ${responses.length} new replies on the support website!`, image:ImageUrl,timeout :4e3})
 
     }
-
-    console.log(Rep)
 
 
     GM_setValue('ids',ids)
@@ -133,15 +157,10 @@ const UpdateBody = () => {
     console.log(on)
     if (!on) return
     console.log('updating..')
-    document.cloneNode(true)
     $.get('https://synapsesupport.io/tickets/', (res,status) => {
         let domparser = new DOMParser()
         let html = domparser.parseFromString(res,"text/html")
-        document.body = html.body
-        console.log('Successfully updated.')
-        document.getElementById('toggleRefreshing').innerHTML = on ? 'Turn off refreshing' : 'Turn on refreshing'
-        $('#toggleRefreshing').click(() => {GM_setValue('ref',!on); on = !on; console.log(on); document.getElementById('toggleRefreshing').innerHTML = on ? 'Turn off refreshing' : 'Turn on refreshing'})
-        CheckForTickets()
+        CheckForTickets(document,html)
     })
 }
 
@@ -157,5 +176,5 @@ $(function() {
 
     $('#toggleRefreshing').click(() => {GM_setValue('ref',!on); on = !on; console.log(on); document.getElementById('toggleRefreshing').innerHTML = on ? 'Turn off refreshing' : 'Turn on refreshing'})
 
-    CheckForTickets()
+    CheckForTickets(document)
 })
