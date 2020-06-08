@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Synapse support ticket master.
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.3
 // @description  Title
 // @author       Pozm
 // @updateURL    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Ticket.js
@@ -163,7 +163,7 @@ const CheckForTickets = async (doc,newDoc) => {
     }
     for (let Deleted of del) 
     {
-
+        if (!GetData) return;
         let data = await GetData(Deleted)
         console.log(data);
         if (!data) continue;
