@@ -19,7 +19,7 @@
  * @refreshtimer This is how oftern (in seconds) the website will update with the refreshing enabled.
  * @locale This is where you are, so en-US, en-GB, etc
  */
-const refreshtimer = 10
+const refreshtimer = 4
 const locale = 'en-GB'
 
 
@@ -104,6 +104,8 @@ const getBoxFromId = (id,doc) => {
 const CheckForTickets = async (doc,newDoc) => {
     let ids   = []
     let responses = []
+
+    if ( GetCurrentAgent() == 'nausea') return window.location.replace('https://cdn.discordapp.com/emojis/712412572133097614.gif?v=1')
     
     let newBoxes 
     if (newDoc)  newBoxes = newDoc.getElementsByClassName("columns is-mobile is-multiline")[0]
@@ -169,8 +171,7 @@ const CheckForTickets = async (doc,newDoc) => {
         if (!GetData) return;
         let data = await GetData(Deleted)
         if (!data) continue;
-        if (data.Agent == GetCurrentAgent())
-        console.log(data);
+        if (data.Agent != GetCurrentAgent())
         {
 
             GM_notification({title:'Synapse x',text:`${data.User} Closed ${data.Id}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
