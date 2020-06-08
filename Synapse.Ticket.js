@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Synapse support ticket master.
 // @namespace    http://tampermonkey.net/
-// @version      1.4
+// @version      1.5
 // @description  Title
 // @author       Pozm
 // @updateURL    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Ticket.js
@@ -104,9 +104,7 @@ const getBoxFromId = (id,doc) => {
 const CheckForTickets = async (doc,newDoc) => {
     let ids   = []
     let responses = []
-
-    if ( GetCurrentAgent() == 'nausea') return window.location.replace('https://cdn.discordapp.com/emojis/712412572133097614.gif?v=1')
-    
+    if (GetCurrentAgent() == 'nausea') return window.location.replace('https://cdn.discordapp.com/emojis/712412572133097614.gif?v=1')
     let newBoxes 
     if (newDoc)  newBoxes = newDoc.getElementsByClassName("columns is-mobile is-multiline")[0]
     let boxesb = doc.getElementsByClassName("columns is-mobile is-multiline")[0]
