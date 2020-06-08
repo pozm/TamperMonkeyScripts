@@ -135,9 +135,12 @@ const CheckForTickets = async (doc,newDoc) => {
 
     if (neww.length == 1) {
 
-
-        console.log('Ticket URL :',geturl(neww[0]))
-        GM_notification({title:'Synapse x',text:`New support ticket! ${neww[0]}`,onclick: () =>{ window.open(geturl(neww[0])) }, image:ImageUrl,timeout :7e3})
+        let id = neww[0]
+        let box = getBoxFromId(id,newDoc)
+        if (!box) return console.log('Unable to get box from id :'+id);
+        let data = getDataFromBox(box)
+        console.log('Ticket URL :',geturl(data.Id))
+        GM_notification({title:'Synapse x',text:`New support ticket! ${data.Id} from ${data.User}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
         console.log('New!')
 
     } else if (neww.length > 1) {
@@ -165,9 +168,9 @@ const CheckForTickets = async (doc,newDoc) => {
     {
         if (!GetData) return;
         let data = await GetData(Deleted)
-        console.log(data);
         if (!data) continue;
         if (data.Agent == GetCurrentAgent())
+        console.log(data);
         {
 
             GM_notification({title:'Synapse x',text:`${data.User} Closed ${data.Id}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
