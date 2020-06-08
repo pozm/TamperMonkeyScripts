@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Synapse support ticket master.
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  Title
 // @author       Pozm
 // @updateURL    https://gist.githubusercontent.com/pozm/d93d87151890755b09f757c42cc2b411/raw/Synapse%2520x%2520ticket.js
