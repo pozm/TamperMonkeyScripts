@@ -16,6 +16,7 @@
 
 const refreshtimer = 10
 const locale = 'en-GB'
+let GetData;
 
 // removes limit on showing how many boxes per line. you can remove this if you dislike.
 GM_addStyle ( `

@@ -4,8 +4,8 @@
 // @version      0.1
 // @description  Title
 // @author       Pozm
-// @updateURL    https://gist.githubusercontent.com/pozm/616bb3d7f6b15ed8f5edc8de67acea8f/raw/Fixes.json
-// @downloadURL  https://gist.githubusercontent.com/pozm/616bb3d7f6b15ed8f5edc8de67acea8f/raw/Fixes.json
+// @updateURL    
+// @downloadURL  
 // @match        http*://*.synapsesupport.io/agent/*
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
 // @grant        GM_setValue
@@ -34,7 +34,7 @@ async function onload()
 {
 
 
-    fixes = JSON.parse(await $.get("https://gist.githubusercontent.com/pozm/616bb3d7f6b15ed8f5edc8de67acea8f/raw/Fixes.json"))
+    fixes = JSON.parse(await $.get("https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/SyanpseFixes.json"))
 
 
     console.log(fixes)
