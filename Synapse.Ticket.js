@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Synapse support ticket master.
 // @namespace    http://tampermonkey.net/
-// @version      2.1
+// @version      2.2
 // @description  Title
 // @author       Pozm
 // @updateURL    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Redirect.js
@@ -27,8 +27,13 @@ GM_addStyle ( `
 
 ` );
 
+let settings = {};
+
 function MAIN()
 {
+    if (!settings.refreshtimer) settings.refreshtimer = 10;
+    if (!settings.locale) settings.locale = 'en-US';
+
     const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
     let GetData;
 
@@ -58,7 +63,7 @@ function MAIN()
         timed.groups.hours = timed.groups.meridian == 'PM'? parseInt(timed.groups.hours,10)+12 : parseInt(timed.groups.hours,10)
         let newtime = `${timed.groups.month} ${timed.groups.day} ${timed.groups.year} ${timed.groups.hours}:${timed.groups.minutes}:${timed.groups.seconds} GMT-0400`
         let timeparsed = new Date( Date.parse(newtime))
-        let datestring = timeparsed.toLocaleString(locale)
+        let datestring = timeparsed.toLocaleString(settings.locale)
         let time12h = tConvert(datestring.split(' ')[1] )
         let full = datestring.split(' ')[0] + ' ' + time12h
         element.innerHTML = full

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Synapse support ticket master.
 // @namespace    http://tampermonkey.net/
-// @version      2.1
+// @version      2.2
 // @description  Title
 // @author       Pozm
 // @updateURL    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Redirect.js
@@ -20,8 +20,10 @@
  * @refreshtimer This is how oftern (in seconds) the website will update with the refreshing enabled.
  * @locale This is where you are, so en-US, en-GB, etc
  */
-let refreshtimer = 4
-let locale = 'en-GB'
+console.assert(MAIN,'It seems that this tampermonkey script was installed incorrectly');
+console.assert(settings,'It seems that this tampermonkey script was installed incorrectly')
+settings.locale = 'en-GB';
+settings.refreshtimer = 4;
 
 $( () => {
 
