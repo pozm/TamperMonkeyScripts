@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Synapse support MAIN
-// @namespace    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts
-// @version      3.0
+// @homepage    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts
+// @version      3.1
 // @description  Title
 // @author       Pozm
 // @updateURL    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Main.js
