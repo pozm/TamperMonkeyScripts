@@ -20,8 +20,8 @@
  * @refreshtimer This is how oftern (in seconds) the website will update with the refreshing enabled.
  * @locale This is where you are, so en-US, en-GB, etc
  */
-const refreshtimer = 4
-const locale = 'en-GB'
+let refreshtimer = 4
+let locale = 'en-GB'
 
 $( () => {
 

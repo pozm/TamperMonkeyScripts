@@ -22,7 +22,7 @@ Data.User = children[4].firstElementChild.innerHTML
 Data.Type = children[5].firstElementChild.innerHTML
 Data.Status = children[6].firstElementChild.innerHTML
 Data.Agent = 'Unknown'
-Data.Responces = {Count : boxes.length-1, res : [] }
+Data.Responces = {Count : boxes.length, res : [] }
 
 for (let boxi in boxes)
 {

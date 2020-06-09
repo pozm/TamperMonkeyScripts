@@ -27,10 +27,11 @@ GM_addStyle ( `
 
 ` );
 
+let refreshtimer = 4
+let locale = 'en-GB'
 
 function MAIN()
 {
-
     const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
     let GetData;
 
@@ -163,7 +164,10 @@ function MAIN()
             if (!GetData) return;
             let data = await GetData(Deleted)
             if (!data) continue;
-            if (data.Agent != GetCurrentAgent())
+            let filter = data.Responces.res.filter((v) => v.Message.startsWith("Ticket closed by"))
+            let closer = filter[0].Responder
+            console.log(closer,filter,data)
+            if (data.Agent == GetCurrentAgent() & closer != GetCurrentAgent())
             {
 
                 GM_notification({title:'Synapse x',text:`${data.User} Closed ${data.Id}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
@@ -209,3 +213,5 @@ function MAIN()
     CheckForTickets(document)
 
 }
+
+//MAIN()
