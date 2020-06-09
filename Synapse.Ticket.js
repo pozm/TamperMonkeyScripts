@@ -15,21 +15,10 @@
 // ==/UserScript==
 
 // removes limit on showing how many boxes per line. you can remove this if you dislike.
-GM_addStyle ( `
-    .container {
-    max-width: max-content;
-    }
-
-    .column.is-one-third-desktop {
-    flex: auto;
-    width: auto;
-    }
-
-` );
 
 let settings = {};
 
-function MAIN()
+function TICKET_MAIN()
 {
     if (!settings.refreshtimer) settings.refreshtimer = 10;
     if (!settings.locale) settings.locale = 'en-US';
@@ -198,14 +187,31 @@ function MAIN()
         })
     }
 
+
+    //RUNS FIRST
+
     if (!GM_getValue('ran')) GM_notification({title:'Synapse x Script',text:`It seems like this is your first time using this script, make sure to enable refreshing to get notifications on new tickets.`,timeout :7e3})
     GM_setValue('ran',true)
+
+
     let b = async () => {
-    let s = await $.get('https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.GetData.js')
-    GetData = new AsyncFunction(s)
+        let s = await $.get('https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.GetData.js')
+        GetData = new AsyncFunction(s)
     };b()
 
-    //Ticket refreshing fix
+    if (settings.uncapTickets)
+    {
+        GM_addStyle(`
+        .container {
+            max-width: max-content;
+        }
+
+        .column.is-one-third-desktop {
+            flex: auto;
+            width: auto;
+        }
+        `);
+    }
 
     document.getElementById('toggleRefreshing').innerHTML = on ? 'Turn off refreshing' : 'Turn on refreshing'
     window.setInterval( UpdateBody, ( Math.max(10, settings.refreshtimer )*600) )
