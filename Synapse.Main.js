@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Synapse support MAIN
-// @namespace    http://tampermonkey.net/
+// @namespace    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts
 // @version      3.0
 // @description  Title
 // @author       Pozm
