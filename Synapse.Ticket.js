@@ -208,7 +208,7 @@ function MAIN()
     //Ticket refreshing fix
 
     document.getElementById('toggleRefreshing').innerHTML = on ? 'Turn off refreshing' : 'Turn on refreshing'
-    window.setInterval( UpdateBody, (settings.refreshtimer*600) )
+    window.setInterval( UpdateBody, ( Math.max(10, settings.refreshtimer )*600) )
     window.setInterval( () => refreshing = false,2e3 )
 
     $('#toggleRefreshing').click(() => {GM_setValue('ref',!on); on = !on; console.log(on); document.getElementById('toggleRefreshing').innerHTML = on ? 'Turn off refreshing' : 'Turn on refreshing'})

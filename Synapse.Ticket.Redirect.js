@@ -20,11 +20,13 @@
  * @refreshtimer This is how oftern (in seconds) the website will update with the refreshing enabled.
  * @locale This is where you are, so en-US, en-GB, etc
  */
+
+
 console.assert(MAIN,'It seems that this tampermonkey script was installed incorrectly');
 console.assert(settings,'It seems that this tampermonkey script was installed incorrectly')
 settings.locale = 'en-GB';
-settings.refreshtimer = 12;
-settings.autoClaim = false
+settings.refreshtimer = 10; // capped at 10, don't try going lower, it wont work.
+settings.autoClaim = false // don't recommend enabling unless you want to get demoted.
 
 $( () => {
 
