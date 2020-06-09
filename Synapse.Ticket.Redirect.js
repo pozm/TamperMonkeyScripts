@@ -8,6 +8,7 @@
 // @downloadURL  https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Ticket.js
 // @match        http*://*.synapsesupport.io/tickets/
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
+// @require      https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Ticket.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_addStyle
@@ -22,4 +23,8 @@
 const refreshtimer = 4
 const locale = 'en-GB'
 
-$.get('https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Ticket.js', (res) => { new Function(res)() } ) // using this method instead to get instant updates.
+$( () => {
+
+    MAIN()
+
+})
