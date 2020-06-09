@@ -27,9 +27,6 @@ GM_addStyle ( `
 
 ` );
 
-let refreshtimer = 4
-let locale = 'en-GB'
-
 function MAIN()
 {
     const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
@@ -213,5 +210,6 @@ function MAIN()
     CheckForTickets(document)
 
 }
-
+//let refreshtimer = 4
+//let locale = 'en-GB'
 //MAIN()
