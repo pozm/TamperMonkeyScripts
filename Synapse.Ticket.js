@@ -101,7 +101,7 @@ function MAIN()
     const CheckForTickets = async (doc,newDoc) => {
         let ids   = []
         let responses = []
-        if (GetCurrentAgent() == 'nausea') return window.location.replace('https://cdn.discordapp.com/emojis/712412572133097614.gif?v=1')
+        //if (GetCurrentAgent() == 'nausea') return window.location.replace('https://cdn.discordapp.com/emojis/712412572133097614.gif?v=1')
         let newBoxes 
         if (newDoc)  newBoxes = newDoc.getElementsByClassName("columns is-mobile is-multiline")[0]
         let boxesb = doc.getElementsByClassName("columns is-mobile is-multiline")[0]
@@ -137,7 +137,8 @@ function MAIN()
             if (!box) return console.log('Unable to get box from id :'+id);
             let data = getDataFromBox(box)
             console.log('Ticket URL :',geturl(data.Id))
-            GM_notification({title:'Synapse x',text:`New support ticket! ${data.Id} from ${data.User}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
+            if (settings.autoClaim) $.get('https://synapsesupport.io/api/claim.php?id='+data.Id)
+            GM_notification({title:'Synapse x',text:`New support ticket! ${data.Id} from ${data.User}${settings.autoClaim ? ' And automatically claimed it!' : ''}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
             console.log('New!')
 
         } else if (neww.length > 1) {

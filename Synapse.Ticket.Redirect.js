@@ -23,7 +23,8 @@
 console.assert(MAIN,'It seems that this tampermonkey script was installed incorrectly');
 console.assert(settings,'It seems that this tampermonkey script was installed incorrectly')
 settings.locale = 'en-GB';
-settings.refreshtimer = 4;
+settings.refreshtimer = 12;
+settings.autoClaim = false
 
 $( () => {
 
