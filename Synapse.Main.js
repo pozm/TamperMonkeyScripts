@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         Synapse support ticket master.
+// @name         Synapse support MAIN
 // @namespace    http://tampermonkey.net/
-// @version      2.2
+// @version      3.0
 // @description  Title
 // @author       Pozm
-// @updateURL    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Redirect.js
-// @downloadURL  https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Redirect.js
+// @updateURL    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Main.js
+// @downloadURL  https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Main.js
 // @match        http*://*.synapsesupport.io/*
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
 // @require      https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Ticket.js
