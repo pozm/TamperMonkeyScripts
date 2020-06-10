@@ -90,12 +90,11 @@ function TICKET_MAIN()
         let ids       = []
         let responses = []
         //if (GetCurrentAgent() == 'nausea') return window.location.replace('https://cdn.discordapp.com/emojis/712412572133097614.gif?v=1')
-        let newBoxes 
-        if (newDoc)  newBoxes = newDoc.getElementsByClassName("columns is-mobile is-multiline")[0]
-        let boxesb = doc.getElementsByClassName("columns is-mobile is-multiline")[0]
-        if (newDoc) boxesb.parentNode.replaceChild(newBoxes,boxesb)
-        let boxes = newBoxes? newBoxes.children : boxesb.children
-
+        let newBoxes = []
+        if (newDoc)  newBoxes = [...newDoc.getElementsByClassName("columns is-mobile is-multiline")]
+        let boxesb = [...doc.getElementsByClassName("columns is-mobile is-multiline")]
+        if (newDoc) for (let newi in newBoxes) {boxesb[newi].parentNode.replaceChild(newBoxes[newi],boxesb[newi])}
+        let boxes = newDoc? [...newBoxes[0].children,...newBoxes[1].children] : [...boxesb[0].children,...boxesb[1].children]
         for (let boxi in boxes) 
         {
             let box = boxes[boxi].firstElementChild
@@ -111,6 +110,7 @@ function TICKET_MAIN()
         function geturl(id) {
             return 'https://synapsesupport.io/agent/?id='+id
         }
+
         if (!GM_getValue('ids')) GM_setValue('ids',ids)
         let filtered = GM_getValue('ids').filter(v=> ids.indexOf(v) >= 0)
         let del = GM_getValue('ids').filter(v=>filtered.indexOf(v) == -1)
