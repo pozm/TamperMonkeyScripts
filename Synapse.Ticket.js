@@ -24,7 +24,6 @@ function TICKET_MAIN()
     if (!settings.locale) settings.locale = 'en-US';
 
     const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-    let GetData;
 
     // get time into groups.
     let timeregex = /(?<month>\d{2})-(?<day>\d{2})-(?<year>\d{4}) (?<hours>\d{2}):(?<minutes>\d{2}):(?<seconds>\d{2}) (?<meridian>AM|PM) (?<timezone>\w.)/m
@@ -88,7 +87,7 @@ function TICKET_MAIN()
     }
     //Tickets.
     const CheckForTickets = async (doc,newDoc) => {
-        let ids   = []
+        let ids       = []
         let responses = []
         //if (GetCurrentAgent() == 'nausea') return window.location.replace('https://cdn.discordapp.com/emojis/712412572133097614.gif?v=1')
         let newBoxes 
@@ -116,10 +115,12 @@ function TICKET_MAIN()
         let filtered = GM_getValue('ids').filter(v=> ids.indexOf(v) >= 0)
         let del = GM_getValue('ids').filter(v=>filtered.indexOf(v) == -1)
         let neww = ids.filter(v=>filtered.indexOf(v) == -1)
-
+        GM_setValue('ids',ids)
         const ImageUrl = "https://synapsesupport.io/static/synapselogonew_transparent_w.png"
 
-        if (neww.length == 1) {
+        //Notifcations
+
+        if (settings.notifications.NewTicket & neww.length == 1) {
 
             let id = neww[0]
             let box = getBoxFromId(id,newDoc)
@@ -130,7 +131,7 @@ function TICKET_MAIN()
             GM_notification({title:'Synapse x',text:`New support ticket! ${data.Id} from ${data.User}${settings.autoClaim ? ' And automatically claimed it!' : ''}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
             console.log('New!')
 
-        } else if (neww.length > 1) {
+        } else if (settings.notifications.NewTicket & neww.length > 1) {
 
 
             console.log(`${neww.length} new tickets!`)
@@ -138,7 +139,7 @@ function TICKET_MAIN()
 
         }
         
-        if (responses.length == 1) {
+        if (settings.notifications.Reply & responses.length == 1) {
             let id = responses[0]
             let box = getBoxFromId(id,newDoc)
             if (!box) return console.log('Unable to get box from id :'+id);
@@ -146,58 +147,29 @@ function TICKET_MAIN()
             console.log('sending notif')
             GM_notification({title:'Synapse x',text:`New reply from ${data.User}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
 
-        } else if (responses.length > 1) {
+        } else if (settings.notifications.Reply & responses.length > 1) {
 
             GM_notification({title:'Synapse x',text:`There are ${responses.length} new replies on the support website!`, image:ImageUrl,timeout :4e3})
 
         }
-        for (let Deleted of del) 
+        if (settings.notifications.Close) 
         {
-            if (!GetData) return;
-            let data = await GetData(Deleted)
-            if (!data) continue;
-            let filter = data.Responces.res.filter((v) => v.Message.startsWith("Ticket closed by"))
-            let closer = filter[0].Responder
-            console.log(closer,filter,data)
-            if (data.Agent == GetCurrentAgent() & closer != GetCurrentAgent())
+            for (let Deleted of del) 
             {
-
-                GM_notification({title:'Synapse x',text:`${data.User} Closed ${data.Id}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
-
+                if (!GetData) return;
+                let data = await GetData(Deleted)
+                if (data.Agent == GetCurrentAgent() & data.ClosedBy != GetCurrentAgent())
+                {
+                    GM_notification({title:'Synapse x',text:`${data.User} Closed ${data.Id}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
+                }
             }
-
-
-        }
-        GM_setValue('ids',ids)
+        }   
     }
-
-    //refeshing
-
-    let on = GM_getValue('ref') ? GM_getValue('ref') : false
-
-
-    const UpdateBody = () => {
-        console.log(on)
-        if (!on) return
-        console.log('updating..')
-        $.get('https://synapsesupport.io/tickets/', (res,status) => {
-            let domparser = new DOMParser()
-            let html = domparser.parseFromString(res,"text/html")
-            CheckForTickets(document,html)
-        })
-    }
-
-
-    //RUNS FIRST
-
+    //begin
     if (!GM_getValue('ran')) GM_notification({title:'Synapse x Script',text:`It seems like this is your first time using this script, make sure to enable refreshing to get notifications on new tickets.`,timeout :7e3})
     GM_setValue('ran',true)
 
-
-    let b = async () => {
-        let s = await $.get('https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.GetData.js')
-        GetData = new AsyncFunction(s)
-    };b()
+    document.getElementsByClassName('content')[0].firstElementChild.after('Using pozm\'s tampermonkey script :)')// don't delete, atleast let me have some credit :(
 
     if (settings.uncapTickets)
     {
@@ -213,6 +185,21 @@ function TICKET_MAIN()
         `);
     }
 
+    if (!settings.notifications) settings.notifications = {NewTicket:true,Reply:true,Close:true};
+
+    //refeshing
+    let on = GM_getValue('ref') ? GM_getValue('ref') : false
+    const UpdateBody = () => {
+        console.log(on)
+        if (!on) return
+        console.log('updating..')
+        $.get('https://synapsesupport.io/tickets/', (res,status) => {
+            let domparser = new DOMParser()
+            let html = domparser.parseFromString(res,"text/html")
+            CheckForTickets(document,html)
+        })
+    }
+
     document.getElementById('toggleRefreshing').innerHTML = on ? 'Turn off refreshing' : 'Turn on refreshing'
     window.setInterval( UpdateBody, ( Math.max(10, settings.refreshtimer )*600) )
     window.setInterval( () => refreshing = false,2e3 )
@@ -222,6 +209,3 @@ function TICKET_MAIN()
     CheckForTickets(document)
 
 }
-//let refreshtimer = 4
-//let locale = 'en-GB'
-//MAIN()
