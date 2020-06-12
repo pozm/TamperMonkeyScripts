@@ -27,13 +27,37 @@ function AGENT_MAIN()
 
 
         let target = obj.target
-        var caretPos = tb[0].selectionStart;
-        var textAreaTxt = tb.val();
+        var caretPos = tb.selectionStart;
+        var textAreaTxt = tb.value 
         var txtToAdd = fixes[target.innerHTML];
-        tb.val(textAreaTxt.substring(0, caretPos) + txtToAdd + textAreaTxt.substring(caretPos) );
+        tb.value  = textAreaTxt.substring(0, caretPos) + txtToAdd + textAreaTxt.substring(caretPos)
+        tb.focus()
 
     }
 
+
+    function clean() 
+    {
+
+        let boxes= document.getElementsByClassName('box')
+        for (let boxi in boxes)
+        {
+
+            let box = boxes[boxi]
+            if (!box.firstElementChild) continue;
+            if (box.firstElementChild.className != 'h5') continue;
+            box.firstElementChild.className = 'subtitle is-5'
+            box.children[1].removeAttribute('class')
+            fixTIme( box.children[1] )
+            box.children[1].innerHTML = 'Posted on ' + box.children[1].innerHTML
+            let hr = document.createElement('hr')
+            hr.style.margin = '0.625rem 0'
+            hr.style.height = '3px'
+            box.children[1].after(hr)
+
+        }
+
+    }
 
     async function onload()
     {
@@ -45,7 +69,8 @@ function AGENT_MAIN()
         console.log(fixes)
 
         let textbox = document.getElementById('querytext').parentElement
-        tb = textbox.children[1]
+        tb = textbox.children[1].firstElementChild
+        console.log(tb)
         tb.spellcheck = true
         console.log(textbox)
         let tags = document.createElement(`div`)
@@ -62,22 +87,6 @@ function AGENT_MAIN()
 
         }
         textbox.appendChild(tags)
-        let boxes= document.getElementsByClassName('box')
-        for (let boxi in boxes)
-        {
-
-            let box = boxes[boxi]
-            if (!box.firstElementChild) continue;
-            if (box.firstElementChild.className != 'h5') continue;
-            box.children[1].removeAttribute('class')
-            fixTIme( box.children[1] )
-            box.children[1].innerHTML = 'Posted on ' + box.children[1].innerHTML
-            let hr = document.createElement('hr')
-            hr.style.margin = '0.625rem 0'
-            hr.style.height = '3px'
-            box.children[1].after(hr)
-
-        }
 
     }
 
@@ -124,29 +133,32 @@ function AGENT_MAIN()
         display: block;
         padding: 1.25rem;
     }
-    .column.is-three-fifths-desktop {
-        flex: auto;
-        width: fit-content;
+    .subtitle.is-5 {
+        font-size: 1.25rem;
+        margin-bottom: 0px;
     }
     .buttons.slight {
         background-color: #0000004f;
-        border-radius: 10px;
         padding-left: 10px;
         padding-top: 10px;
         padding-bottom: 1px;
-    }
-    .button.is-Purp {
-        background-color: #503199;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        width: 99.60%;
+        margin: auto;
+        position: relative;
+        top: -3px;
     }
     `);
     //done
 
-
+    clean()
     let a = document.createElement("a");a.href = "https://synapsesupport.io/tickets/"
     let sel = document.getElementsByClassName("section")[1]
     sel.prepend(a)
     a.appendChild(sel.children[1])
     let buttons = document.getElementsByClassName("field is-grouped")[0]
+    if (!buttons) return console.log('Ticket is closed!')
     let button = buttons.children[0]
     let newb = buttons.appendChild(button.cloneNode(true))
     let inner = newb.firstElementChild
