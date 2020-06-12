@@ -144,7 +144,7 @@ function AGENT_MAIN()
         padding-bottom: 1px;
         border-bottom-left-radius: 10px;
         border-bottom-right-radius: 10px;
-        width: 99.60%;
+        width: 710px;
         margin: auto;
         position: relative;
         top: -3px;
