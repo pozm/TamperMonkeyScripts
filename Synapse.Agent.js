@@ -14,6 +14,8 @@
 // @grant        GM_notification
 // ==/UserScript==
 
+
+
 function AGENT_MAIN() 
 {
 
@@ -42,15 +44,16 @@ function AGENT_MAIN()
 
         console.log(fixes)
 
-        let textbox = $('.field')[0]
-        tb = $(".textarea").first()
+        let textbox = document.getElementById('querytext').parentElement
+        tb = textbox.children[1]
+        tb.spellcheck = true
         console.log(textbox)
         let tags = document.createElement(`div`)
-        tags.className = "buttons"
+        tags.className = "buttons slight"
         for (let fix of Object.keys(fixes) ) {
 
             let button = document.createElement("button")
-            button.className = "button Quick-Select"
+            button.className = "button is-dark"
             button.innerHTML = fix
             button.type = 'button'
             tags.appendChild(button)
@@ -59,6 +62,22 @@ function AGENT_MAIN()
 
         }
         textbox.appendChild(tags)
+        let boxes= document.getElementsByClassName('box')
+        for (let boxi in boxes)
+        {
+
+            let box = boxes[boxi]
+            if (!box.firstElementChild) continue;
+            if (box.firstElementChild.className != 'h5') continue;
+            box.children[1].removeAttribute('class')
+            fixTIme( box.children[1] )
+            box.children[1].innerHTML = 'Posted on ' + box.children[1].innerHTML
+            let hr = document.createElement('hr')
+            hr.style.margin = '0.625rem 0'
+            hr.style.height = '3px'
+            box.children[1].after(hr)
+
+        }
 
     }
 
@@ -95,6 +114,33 @@ function AGENT_MAIN()
         })
 
     }
+    // editing style.
+    GM_addStyle(`
+    .box {
+        background-color: #343c3d;
+        border-radius: 2px;
+        box-shadow: none;
+        color: #fff;
+        display: block;
+        padding: 1.25rem;
+    }
+    .column.is-three-fifths-desktop {
+        flex: auto;
+        width: fit-content;
+    }
+    .buttons.slight {
+        background-color: #0000004f;
+        border-radius: 10px;
+        padding-left: 10px;
+        padding-top: 10px;
+        padding-bottom: 1px;
+    }
+    .button.is-Purp {
+        background-color: #503199;
+    }
+    `);
+    //done
+
 
     let a = document.createElement("a");a.href = "https://synapsesupport.io/tickets/"
     let sel = document.getElementsByClassName("section")[1]

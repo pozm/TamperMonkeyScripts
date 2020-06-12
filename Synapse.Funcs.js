@@ -45,3 +45,35 @@ async function GetData(id)
     return Data
 
 }
+
+function fixTIme(element)
+{
+
+    let timeregex = /(?<month>\d{2})-(?<day>\d{2})-(?<year>\d{4}) (?<hours>\d{2}):(?<minutes>\d{2}):(?<seconds>\d{2}) (?<meridian>AM|PM) (?<timezone>\w.)/m
+
+    // convert from 24 to 12.
+    function tConvert(time) {
+        time = time.toString().match(/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+
+        if (time.length > 1) {
+            time = time.slice(1);
+            time[5] = +time[0] < 12 ? ' AM' : ' PM';
+            time[0] = +time[0] % 12 || 12;
+        }
+        return time.join('');
+    }
+
+
+    let time = element.innerHTML
+    let timed = time.match(timeregex)
+    if (!timed) return
+    timed.groups.hours = timed.groups.hours == '12'? 0 : timed.groups.hours
+    timed.groups.hours = timed.groups.meridian == 'PM'? parseInt(timed.groups.hours,10)+12 : parseInt(timed.groups.hours,10)
+    let newtime = `${timed.groups.month} ${timed.groups.day} ${timed.groups.year} ${timed.groups.hours}:${timed.groups.minutes}:${timed.groups.seconds} GMT-0400`
+    let timeparsed = new Date( Date.parse(newtime))
+    let datestring = timeparsed.toLocaleString(settings.locale)
+    let time12h = tConvert(datestring.split(' ')[1] )
+    let full = datestring.split(' ')[0] + ' ' + time12h
+    element.innerHTML = full
+
+}

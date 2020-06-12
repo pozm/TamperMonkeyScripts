@@ -17,46 +17,12 @@
 // removes limit on showing how many boxes per line. you can remove this if you dislike.
 
 let settings = {};
+let HeardReplies = {}
 
 function TICKET_MAIN()
 {
     if (!settings.refreshtimer) settings.refreshtimer = 10;
     if (!settings.locale) settings.locale = 'en-US';
-
-    const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-
-    // get time into groups.
-    let timeregex = /(?<month>\d{2})-(?<day>\d{2})-(?<year>\d{4}) (?<hours>\d{2}):(?<minutes>\d{2}):(?<seconds>\d{2}) (?<meridian>AM|PM) (?<timezone>\w.)/m
-
-    // convert from 24 to 12.
-    function tConvert(time) {
-        time = time.toString().match(/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
-
-        if (time.length > 1) {
-            time = time.slice(1);
-            time[5] = +time[0] < 12 ? ' AM' : ' PM';
-            time[0] = +time[0] % 12 || 12;
-        }
-        return time.join('');
-    }
-    // fix the time to make it your timezone.
-    function fixTIme(element)
-    {
-
-
-        let time = element.innerHTML
-        let timed = time.match(timeregex)
-        if (!timed) return
-        timed.groups.hours = timed.groups.hours == '12'? 0 : timed.groups.hours
-        timed.groups.hours = timed.groups.meridian == 'PM'? parseInt(timed.groups.hours,10)+12 : parseInt(timed.groups.hours,10)
-        let newtime = `${timed.groups.month} ${timed.groups.day} ${timed.groups.year} ${timed.groups.hours}:${timed.groups.minutes}:${timed.groups.seconds} GMT-0400`
-        let timeparsed = new Date( Date.parse(newtime))
-        let datestring = timeparsed.toLocaleString(settings.locale)
-        let time12h = tConvert(datestring.split(' ')[1] )
-        let full = datestring.split(' ')[0] + ' ' + time12h
-        element.innerHTML = full
-
-    }
 
     function GetCurrentAgent() 
     {
@@ -126,6 +92,7 @@ function TICKET_MAIN()
             let box = getBoxFromId(id,newDoc)
             if (!box) return console.log('Unable to get box from id :'+id);
             let data = getDataFromBox(box)
+            if (settings.notifications.IgnoreTypes.includes( data.TicketType)) return;
             console.log('Ticket URL :',geturl(data.Id))
             if (settings.autoClaim) $.get('https://synapsesupport.io/api/claim.php?id='+data.Id)
             GM_notification({title:'Synapse x',text:`New support ticket! ${data.Id} from ${data.User}${settings.autoClaim ? ' And automatically claimed it!' : ''}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
@@ -144,6 +111,9 @@ function TICKET_MAIN()
             let box = getBoxFromId(id,newDoc)
             if (!box) return console.log('Unable to get box from id :'+id);
             let data = getDataFromBox(box)
+            let data2 = await GetData(id)
+            if (HeardReplies[id] == data2.Responces.Count)
+            HeardReplies[id] = data2.Responces.Count
             console.log('sending notif')
             GM_notification({title:'Synapse x',text:`New reply from ${data.User}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
 
@@ -185,7 +155,12 @@ function TICKET_MAIN()
         `);
     }
 
-    if (!settings.notifications) settings.notifications = {NewTicket:true,Reply:true,Close:true};
+    if (!settings.notifications) settings.notifications = {NewTicket:true,Reply:true,Close:true,IgnoreTypes : ['Blacklist/Ban Appeal','Email Change Request']};
+    else if (!settings.notifications.NewTicket) settings.notifications.NewTicket = true;
+    else if (!settings.notifications.Reply) settings.notifications.Reply = true;
+    else if (!settings.notifications.Close) settings.notifications.Close = true;
+    else if (!settings.notifications.IgnoreTypes) settings.notifications.IgnoreTypes = ['Blacklist/Ban Appeal','Email Change Request'];
+
 
     //refeshing
     let on = GM_getValue('ref') ? GM_getValue('ref') : false

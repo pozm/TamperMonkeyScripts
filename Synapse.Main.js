@@ -8,7 +8,7 @@
 // @downloadURL  https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Main.js
 // @match        http*://*.synapsesupport.io/*
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
-// @require      https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.GetData.js
+// @require      https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Funcs.js
 // @require      https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Ticket.js
 // @require      https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Agent.js
 // @grant        GM_setValue
@@ -27,11 +27,12 @@ settings.uncapTickets = true     // uncaps the amount of tickets which can be vi
 settings.locale = 'en-GB';     // This is where you are, so en-US, en-GB, etc
 settings.refreshtimer = 10;  // capped at 10, don't try going lower, it wont work.
 settings.autoClaim = false // don't recommend enabling unless you want to get demoted.
-settings.notifications = {NewTicket:true,Reply:true,Close:true} 
+settings.notifications = {NewTicket:true,Reply:true,Close:true, IgnoreTypes : ['Blacklist/Ban Appeal','Email Change Request']}
 /**
  * @Newticket this is for when a new ticket is made. 
  * @Reply This is when you've claimed a ticket and the user has responded. 
  * @Close this is when one of your claimed tickets get closed (by the user, not you.)
+ * @IgnoreTypes These are the ticket types which you will not get new ticket notifications for.
  */
 
 $( () => {
