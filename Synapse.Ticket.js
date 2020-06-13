@@ -1,5 +1,6 @@
 let Settings = GM_getValue('SETTINGS');
 let HeardReplies = {}
+let settings = {} //deprecated
 
 function TICKET_MAIN()
 {
@@ -144,6 +145,28 @@ function TICKET_MAIN()
         display: block;
         padding: 1.25rem;
     }
+    legend {
+        background-color: #000;
+        color: #fff;
+        padding: 3px 6px;
+    }
+    input {
+        margin: .4rem;
+    }
+    .box.BlurAlll {
+        -webkit-filter: blur(5px);
+        -moz-filter: blur(5px);
+        -o-filter: blur(5px);
+        -ms-filter: blur(5px);
+        filter: blur(5px);
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 99;
+        background-color: rgba(0, 0, 0, 0.75);
+    }
     `)
 
     // temp Settings
@@ -152,9 +175,9 @@ function TICKET_MAIN()
     if (!Settings) 
     {
         Settings = {}
-        Settings.uncapTickets = true     // uncaps the amount of tickets which can be viewed on a line.
-        Settings.locale = 'en-GB';     // This is where you are, so en-US, en-GB, etc
-        Settings.refreshtimer = 10;  // capped at 10, don't try going lower, it wont work.
+        Settings.uncapTickets = true
+        Settings.locale = 'en-GB';
+        Settings.refreshtimer = 10; 
         Settings.notifications = {NewTicket:true,Reply:true,Close:true, IgnoreTypes : ['Blacklist/Ban Appeal','Email Change Request']}
         GM_setValue('SETTINGS',Settings)
         console.log('Created new Settings.')
@@ -236,6 +259,10 @@ function TICKET_MAIN()
 
         document.body.firstElementChild.before(parsedsettings)
 
+        let blur = document.createElement('div')
+        blur.className = 'box BlurAlll'
+        document.body.firstElementChild.before(blur)
+
         console.log(parsedsettings)
 
         let sets = 
@@ -273,6 +300,7 @@ function TICKET_MAIN()
         document.getElementById('SettingClose').addEventListener('click',()=>
         {
             parsedsettings.cloneNode(true);
+            blur.remove()
             parsedsettings.remove()
             window.location.reload();
         })
