@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Synapse support MAIN
 // @homepage     https://github.com/pozm/TamperMonkeyScripts
-// @version      3.2
+// @version      3.5
 // @description  Makes the synapse support website much better (for staff). most notable features are : notifications for (new tickets, replies, and claimed ticketed closes), quick claim , and quick responses on agent page
 // @author       Pozm
 // @updateURL    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Main.js
