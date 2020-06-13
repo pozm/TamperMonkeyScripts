@@ -1,21 +1,3 @@
-// ==UserScript==
-// @name         Synapse support ticket - AGENT master.
-// @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  Title
-// @author       Pozm
-// @updateURL    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Agent.js
-// @downloadURL  https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Agent.js
-// @match        http*://*.synapsesupport.io/agent/*
-// @require      https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
-// @grant        GM_setValue
-// @grant        GM_getValue
-// @grant        GM_addStyle
-// @grant        GM_notification
-// ==/UserScript==
-
-
-
 function AGENT_MAIN() 
 {
 

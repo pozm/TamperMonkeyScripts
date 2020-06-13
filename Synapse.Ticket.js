@@ -1,28 +1,8 @@
-// ==UserScript==
-// @name         Synapse support ticket master.
-// @namespace    http://tampermonkey.net/
-// @version      2.2
-// @description  Title
-// @author       Pozm
-// @updateURL    https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Redirect.js
-// @downloadURL  https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Redirect.js
-// @match        http*://*.synapsesupport.io/tickets/
-// @require      https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
-// @grant        GM_setValue
-// @grant        GM_getValue
-// @grant        GM_addStyle
-// @grant        GM_notification
-// ==/UserScript==
-
-// removes limit on showing how many boxes per line. you can remove this if you dislike.
-
-let settings = {};
+let Settings = GM_getValue('SETTINGS');
 let HeardReplies = {}
 
 function TICKET_MAIN()
 {
-    if (!settings.refreshtimer) settings.refreshtimer = 10;
-    if (!settings.locale) settings.locale = 'en-US';
 
     function GetCurrentAgent() 
     {
@@ -86,19 +66,19 @@ function TICKET_MAIN()
 
         //Notifcations
 
-        if (settings.notifications.NewTicket & neww.length == 1) {
+        if (Settings.notifications.NewTicket & neww.length == 1) {
 
             let id = neww[0]
             let box = getBoxFromId(id,newDoc)
             if (!box) return console.log('Unable to get box from id :'+id);
             let data = getDataFromBox(box)
-            if (settings.notifications.IgnoreTypes.includes( data.TicketType)) return;
+            if (Settings.notifications.IgnoreTypes.includes( data.TicketType)) return;
             console.log('Ticket URL :',geturl(data.Id))
-            if (settings.autoClaim) $.get('https://synapsesupport.io/api/claim.php?id='+data.Id)
-            GM_notification({title:'Synapse x',text:`New support ticket! ${data.Id} from ${data.User}${settings.autoClaim ? ' And automatically claimed it!' : ''}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
+            if (Settings.autoClaim) $.get('https://synapsesupport.io/api/claim.php?id='+data.Id)
+            GM_notification({title:'Synapse x',text:`New support ticket! ${data.Id} from ${data.User}${Settings.autoClaim ? ' And automatically claimed it!' : ''}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
             console.log('New!')
 
-        } else if (settings.notifications.NewTicket & neww.length > 1) {
+        } else if (Settings.notifications.NewTicket & neww.length > 1) {
 
 
             console.log(`${neww.length} new tickets!`)
@@ -106,7 +86,7 @@ function TICKET_MAIN()
 
         }
         
-        if (settings.notifications.Reply & responses.length == 1) {
+        if (Settings.notifications.Reply & responses.length == 1) {
             let id = responses[0]
             let box = getBoxFromId(id,newDoc)
             if (!box) return console.log('Unable to get box from id :'+id);
@@ -117,12 +97,12 @@ function TICKET_MAIN()
             console.log('sending notif')
             GM_notification({title:'Synapse x',text:`New reply from ${data.User}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
 
-        } else if (settings.notifications.Reply & responses.length > 1) {
+        } else if (Settings.notifications.Reply & responses.length > 1) {
 
             GM_notification({title:'Synapse x',text:`There are ${responses.length} new replies on the support website!`, image:ImageUrl,timeout :4e3})
 
         }
-        if (settings.notifications.Close) 
+        if (Settings.notifications.Close) 
         {
             for (let Deleted of del) 
             {
@@ -136,12 +116,52 @@ function TICKET_MAIN()
         }   
     }
     //begin
+
     if (!GM_getValue('ran')) GM_notification({title:'Synapse x Script',text:`It seems like this is your first time using this script, make sure to enable refreshing to get notifications on new tickets.`,timeout :7e3})
     GM_setValue('ran',true)
 
     document.getElementsByClassName('content')[0].firstElementChild.after('Using pozm\'s tampermonkey script :)')// don't delete, atleast let me have some credit :(
 
-    if (settings.uncapTickets)
+    GM_addStyle(`
+    
+    .box.is-Settings {
+        position: absolute;
+        height: 50px;
+        transform: translate(0px, 100px);
+        z-index: 100;
+        background: rgb(35,35,35);
+        width: -webkit-fill-available;
+        margin-left: 35%;
+        margin-right: 35%;
+        height: 800px;
+        border-radius: 8px;
+    }
+    .box {
+        background-color: #343c3d;
+        border-radius: 2px;
+        box-shadow: none;
+        color: #fff;
+        display: block;
+        padding: 1.25rem;
+    }
+    `)
+
+    // temp Settings
+
+
+    if (!Settings) 
+    {
+        Settings = {}
+        Settings.uncapTickets = true     // uncaps the amount of tickets which can be viewed on a line.
+        Settings.locale = 'en-GB';     // This is where you are, so en-US, en-GB, etc
+        Settings.refreshtimer = 10;  // capped at 10, don't try going lower, it wont work.
+        Settings.notifications = {NewTicket:true,Reply:true,Close:true, IgnoreTypes : ['Blacklist/Ban Appeal','Email Change Request']}
+        GM_setValue('SETTINGS',Settings)
+        console.log('Created new Settings.')
+    }
+
+
+    if (Settings.uncapTickets)
     {
         GM_addStyle(`
         .container {
@@ -155,13 +175,113 @@ function TICKET_MAIN()
         `);
     }
 
-    if (!settings.notifications) settings.notifications = {NewTicket:true,Reply:true,Close:true,IgnoreTypes : ['Blacklist/Ban Appeal','Email Change Request']};
-    else if (!settings.notifications.NewTicket) settings.notifications.NewTicket = true;
-    else if (!settings.notifications.Reply) settings.notifications.Reply = true;
-    else if (!settings.notifications.Close) settings.notifications.Close = true;
-    else if (!settings.notifications.IgnoreTypes) settings.notifications.IgnoreTypes = ['Blacklist/Ban Appeal','Email Change Request'];
+
+    //Settings ui
+
+    let buts = document.getElementsByClassName('level')[0].firstElementChild
+    let settingButton = document.createElement('button')
+    settingButton.className = 'button'
+    settingButton.textContent = 'Settings'
+
+    settingButton.addEventListener('click',function() 
+    {
+        console.log(Settings)
+        let settingsData = `
+            <div class="box is-Settings">
+                <button class="button is-danger is-outlined" style="margin-left: 96%;" id = "SettingClose"><span class="icon is-small">X</span></button>
+                <div>
+                    <div>
+                        <input type="checkbox" id="UCT" name="uncapTickets" ${Settings.uncapTickets? 'checked' : ''}> 
+                        <label for="UCT"> Uncap Tickets (allows for multiple tickets on one line)</label>
+                    </div>
+        
+                <div>
+                    <label for="Locale">Date/Time locale :</label>
+                    <select id="Locale" name = "locale">
+    
+                        <option value="en-GB">Great Britain</option>
+                        <option value="en-US">United States</option>
+    
+                    </select>
+                </div>
+                <div>
+                    <label for="refreshtimer">Refresh timer :</label>
+                    <input type="Number" id="refreshtimer" name="refreshtimer" min="10" max="60" value=${Settings.refreshtimer}>
+                </div>
+            
+                <div>
+                    <form>
+                        <fieldset>
+                            <legend>Notifications</legend>
+            
+                            <div>
+                                <input type="checkbox" id="NewTicket" name="Notifications" ${Settings.notifications.NewTicket? 'checked' : ''}> 
+                                <label for="NewTicket">Get notifications on new tickets</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="Reply" name="Notifications" ${Settings.notifications.Reply? 'checked' : ''}> 
+                                <label for="Reply">Get notifications on Replies to claimed tickets</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="Close" name="Notifications" ${Settings.notifications.Close? 'checked' : ''}> 
+                                <label for="Close">Get notifications on ticket closes (which you have claimed)</label>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+    
+            </div>
+        </div>`
+        let parsedsettings = (new DOMParser().parseFromString(settingsData,'text/html')).body.firstElementChild
+
+        document.body.firstElementChild.before(parsedsettings)
+
+        console.log(parsedsettings)
+
+        let sets = 
+        {
+            UCT:document.getElementById('UCT'),
+            Locale:document.getElementById('Locale'),
+            Refresh:document.getElementById('refreshtimer'),
+            NewTickets:document.getElementById('NewTicket'),
+            ReplyTicekts:document.getElementById('Reply'),
+            CloseTickets:document.getElementById('Close'),
+        }
+        console.log(sets.Locale.options,Settings.locale)
+        for (let v of sets.Locale.options) {
+            if (v.value === Settings.locale) v.setAttribute('selected',null)
+        }
+
+        for (let seti in sets) 
+        {
+
+            let set = sets[seti]
+            console.log(set)
+            set.addEventListener('change', (event) =>
+            {
+                let newval = event.target.type === 'checkbox' ?event.target.checked:event.target.value
+                console.log(event.target.name == 'Notifications' ? Settings.notifications : Settings[event.target.name],event.target.id,newval)
+                if (event.target.name == 'Notifications') Settings.notifications[event.target.id] = newval; else Settings[event.target.name] = newval
+                GM_setValue('SETTINGS',Settings)
+                console.log(event.target.name == 'Notifications' ? Settings.notifications[event.target.id] : Settings[event.target.name],event.target.id,newval)
+
+            })
 
 
+        }
+
+        document.getElementById('SettingClose').addEventListener('click',()=>
+        {
+            parsedsettings.cloneNode(true);
+            parsedsettings.remove()
+            window.location.reload();
+        })
+
+        console.log('Clicked!')
+
+    })
+
+    buts.appendChild(settingButton)
     //refeshing
     let on = GM_getValue('ref') ? GM_getValue('ref') : false
     const UpdateBody = () => {
@@ -176,7 +296,7 @@ function TICKET_MAIN()
     }
 
     document.getElementById('toggleRefreshing').innerHTML = on ? 'Turn off refreshing' : 'Turn on refreshing'
-    window.setInterval( UpdateBody, ( Math.max(10, settings.refreshtimer )*1000) )
+    window.setInterval( UpdateBody, ( Math.max(10, Settings.refreshtimer )*1000) )
     window.setInterval( () => refreshing = false,2e3 )
 
     $('#toggleRefreshing').click(() => {GM_setValue('ref',!on); on = !on; console.log(on); document.getElementById('toggleRefreshing').innerHTML = on ? 'Turn off refreshing' : 'Turn on refreshing'})

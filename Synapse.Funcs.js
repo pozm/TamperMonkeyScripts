@@ -71,7 +71,7 @@ function fixTIme(element)
     timed.groups.hours = timed.groups.meridian == 'PM'? parseInt(timed.groups.hours,10)+12 : parseInt(timed.groups.hours,10)
     let newtime = `${timed.groups.month} ${timed.groups.day} ${timed.groups.year} ${timed.groups.hours}:${timed.groups.minutes}:${timed.groups.seconds} GMT-0400`
     let timeparsed = new Date( Date.parse(newtime))
-    let datestring = timeparsed.toLocaleString(settings.locale)
+    let datestring = timeparsed.toLocaleString(Settings.locale)
     let time12h = tConvert(datestring.split(' ')[1] )
     let full = datestring.split(' ')[0] + ' ' + time12h
     element.innerHTML = full
