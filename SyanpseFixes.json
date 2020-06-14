@@ -11,7 +11,8 @@
     "User Account":"Could you create a new windows user account which is an admin, you can find a guide on how to do that here:\nhttps://support.microsoft.com/en-gb/help/4026923/windows-10-create-a-local-user-or-administrator-account",
     "Inactive":"This ticket has been closed due to inactivity. Feel free to create another ticket with the same question if your issue wasn't resolved.",
     "Discord Invite":"Could you join this discord server and ask one of the currently online staff to give you an invite? https://discord.gg/NzWWzUF",
-    "Reinstall":"Could you close synapse and delete the bin folder in your synapse directory, after deleting bin run synapse x.exe as admin."
+    "Reinstall":"Could you close synapse and delete the bin folder in your synapse directory, after deleting bin run synapse x.exe as admin.",
+    "24h": "This issue is caused when you switch pc when you've already switched pc within 24 hours. \n\nThis issue can be resolved by either\n1. waiting it out:\nIts pretty easy to do, all you need to do is wait 24 hours and you should be able to use synapse x perfectly fine again\n2. Contacting an admin:\nThis method of trying to get it resolved is a bit more tedious, and it requires you to be in the discord. Basically you need to contact an admin saying that you have 24 hours issue, and why, for example changed pc, changed pc parts (if unknown state that its unknown why.), and wait for a response from the admin you contacted, do not dm multiple the one you dm'd will respond given you wait long enough. (make sure that the person you're contacting is an actual admin, you can tell that if they have the admin role.)"
 
   
   }
