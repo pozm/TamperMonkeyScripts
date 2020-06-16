@@ -1,12 +1,21 @@
-function AGENT_MAIN() 
+let f1 = $.get("https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/SyanpseFixes.json")
+let f2 = $.get("https://gist.githubusercontent.com/pozm/616bb3d7f6b15ed8f5edc8de67acea8f/raw/Fixes.json")
+
+async function AGENT_MAIN() 
 {
 
     let tb
-    let fixes
+    let fixes;
+    try {
+        fixes = JSON.parse(await f1)
+    } catch (error) {
+        try { fixes = JSON.parse(await f2)} catch(e) {''}
+    }
+
+    console.log(fixes)
 
     function OnClick(obj)
     {
-
 
         let target = obj.target
         var caretPos = tb.selectionStart;
@@ -43,9 +52,6 @@ function AGENT_MAIN()
 
     async function onload()
     {
-
-
-        fixes = JSON.parse(await $.get("https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/SyanpseFixes.json"))
 
 
         console.log(fixes)
@@ -88,19 +94,29 @@ function AGENT_MAIN()
 
     }
 
+    function a_refresh() 
+    {
+        var textAreaTxt = tb.value 
+        if (textAreaTxt != "") return;
+        $.get(window.location.href, (res,status) => {
+            let domparser = new DOMParser()
+            let html = domparser.parseFromString(res,"text/html")
+            document.body.cloneNode(true);
+            document.body = html.body
+            console.log('Successfully updated.')
+            clean()
+            onload()
+            document.title = id
+        })
+
+    }
+
     function claim() {
         let id = getId()
         console.log(id)
         $.get('https://synapsesupport.io/api/claim.php?id='+id, () =>
         {
-            $.get(window.location.href, (res,status) => {
-                let domparser = new DOMParser()
-                let html = domparser.parseFromString(res,"text/html")
-                document.body = html.body
-                console.log('Successfully updated.')
-                onload()
-                document.title = id
-            })
+            a_refresh()
 
         })
 
@@ -133,6 +149,7 @@ function AGENT_MAIN()
     }
     `);
     //done
+    if (!WebsiteType || WebsiteType != "")
 
     clean()
     let a = document.createElement("a");a.href = "https://synapsesupport.io/tickets/"
@@ -147,6 +164,7 @@ function AGENT_MAIN()
     let id = getId()
     onload()
     document.title = id
+    //setInterval(a_refresh,Math.max(10, Settings.refreshtimer )*1000)
     inner.setAttribute("type","button")
     inner.setAttribute("value","Claim")
     inner.setAttribute("class","button is-info")

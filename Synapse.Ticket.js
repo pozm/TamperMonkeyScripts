@@ -33,88 +33,90 @@ function TICKET_MAIN()
 
     }
     //Tickets.
-    const CheckForTickets = async (doc,newDoc) => {
-        let ids       = []
-        let responses = []
-        //if (GetCurrentAgent() == 'nausea') return window.location.replace('https://cdn.discordapp.com/emojis/712412572133097614.gif?v=1')
-        let newBoxes = []
-        if (newDoc)  newBoxes = [...newDoc.getElementsByClassName("columns is-mobile is-multiline")]
-        let boxesb = [...doc.getElementsByClassName("columns is-mobile is-multiline")]
-        if (newDoc) for (let newi in newBoxes) {boxesb[newi].parentNode.replaceChild(newBoxes[newi],boxesb[newi])}
-        let boxes = newDoc? [...newBoxes[0].children,...newBoxes[1].children] : [...boxesb[0].children,...boxesb[1].children]
-        for (let boxi in boxes) 
-        {
-            let box = boxes[boxi].firstElementChild
-            if (! box) continue;
-            let data = getDataFromBox(box)
-            box.id = data.Id
-            ids = [...ids,data.Id]
-            if (data.Responded) responses = [...responses,data.Id]
-            fixTIme( data.Opened )
-            fixTIme( data.LastUpdate )
-        }
-
-        function geturl(id) {
-            return 'https://synapsesupport.io/agent/?id='+id
-        }
-
-        if (!GM_getValue('ids')) GM_setValue('ids',ids)
-        let filtered = GM_getValue('ids').filter(v=> ids.indexOf(v) >= 0)
-        let del = GM_getValue('ids').filter(v=>filtered.indexOf(v) == -1)
-        let neww = ids.filter(v=>filtered.indexOf(v) == -1)
-        GM_setValue('ids',ids)
-        const ImageUrl = "https://synapsesupport.io/static/synapselogonew_transparent_w.png"
-
-        //Notifcations
-
-        if (Settings.notifications.NewTicket & neww.length == 1) {
-
-            let id = neww[0]
-            let box = getBoxFromId(id,newDoc)
-            if (!box) return console.log('Unable to get box from id :'+id);
-            let data = getDataFromBox(box)
-            if (Settings.notifications.IgnoreTypes.includes( data.TicketType)) return;
-            console.log('Ticket URL :',geturl(data.Id))
-            if (Settings.autoClaim) $.get('https://synapsesupport.io/api/claim.php?id='+data.Id)
-            GM_notification({title:'Synapse x',text:`New support ticket! ${data.Id} from ${data.User}${Settings.autoClaim ? ' And automatically claimed it!' : ''}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
-            console.log('New!')
-
-        } else if (Settings.notifications.NewTicket & neww.length > 1) {
-
-
-            console.log(`${neww.length} new tickets!`)
-            GM_notification({title:'Synapse x',text:`There are ${neww.length} new tickets on the support website!`, image:ImageUrl,timeout :4e3})
-
-        }
-        
-        if (Settings.notifications.Reply & responses.length == 1) {
-            let id = responses[0]
-            let box = getBoxFromId(id,newDoc)
-            if (!box) return console.log('Unable to get box from id :'+id);
-            let data = getDataFromBox(box)
-            let data2 = await GetData(id)
-            if (HeardReplies[id] == data2.Responces.Count)
-            HeardReplies[id] = data2.Responces.Count
-            console.log('sending notif')
-            GM_notification({title:'Synapse x',text:`New reply from ${data.User}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
-
-        } else if (Settings.notifications.Reply & responses.length > 1) {
-
-            GM_notification({title:'Synapse x',text:`There are ${responses.length} new replies on the support website!`, image:ImageUrl,timeout :4e3})
-
-        }
-        if (Settings.notifications.Close) 
-        {
-            for (let Deleted of del) 
+    if (WebsiteType) {
+        var CheckForTickets = async (doc,newDoc) => {
+            let ids       = []
+            let responses = []
+            //if (GetCurrentAgent() == 'nausea') return window.location.replace('https://cdn.discordapp.com/emojis/712412572133097614.gif?v=1')
+            let newBoxes = []
+            if (newDoc && WebsiteType)  newBoxes = [...newDoc.getElementsByClassName("columns is-mobile is-multiline")]
+            let boxesb = [...doc.getElementsByClassName("columns is-mobile is-multiline")]
+            if (newDoc) for (let newi in newBoxes) {boxesb[newi].parentNode.replaceChild(newBoxes[newi],boxesb[newi])}
+            let boxes = newDoc? [...newBoxes[0].children,...newBoxes[1].children] : [...boxesb[0].children,...boxesb[1].children]
+            for (let boxi in boxes) 
             {
-                if (!GetData) return;
-                let data = await GetData(Deleted)
-                if (data.Agent == GetCurrentAgent() & data.ClosedBy != GetCurrentAgent())
-                {
-                    GM_notification({title:'Synapse x',text:`${data.User} Closed ${data.Id}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
-                }
+                let box = boxes[boxi].firstElementChild
+                if (! box) continue;
+                let data = getDataFromBox(box)
+                box.id = data.Id
+                ids = [...ids,data.Id]
+                if (data.Responded) responses = [...responses,data.Id]
+                fixTIme( data.Opened )
+                fixTIme( data.LastUpdate )
             }
-        }   
+
+            function geturl(id) {
+                return 'https://synapsesupport.io/agent/?id='+id
+            }
+
+            if (!GM_getValue('ids')) GM_setValue('ids',ids)
+            let filtered = GM_getValue('ids').filter(v=> ids.indexOf(v) >= 0)
+            let del = GM_getValue('ids').filter(v=>filtered.indexOf(v) == -1)
+            let neww = ids.filter(v=>filtered.indexOf(v) == -1)
+            GM_setValue('ids',ids)
+            const ImageUrl = "https://synapsesupport.io/static/synapselogonew_transparent_w.png"
+
+            //Notifcations
+
+            if (Settings.notifications.NewTicket & neww.length == 1) {
+
+                let id = neww[0]
+                let box = getBoxFromId(id,newDoc)
+                if (!box) return console.log('Unable to get box from id :'+id);
+                let data = getDataFromBox(box)
+                if (Settings.notifications.IgnoreTypes.includes( data.TicketType)) return;
+                console.log('Ticket URL :',geturl(data.Id))
+                if (Settings.autoClaim) $.get('https://synapsesupport.io/api/claim.php?id='+data.Id)
+                GM_notification({title:'Synapse x',text:`New support ticket! ${data.Id} from ${data.User}${Settings.autoClaim ? ' And automatically claimed it!' : ''}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
+                console.log('New!')
+
+            } else if (Settings.notifications.NewTicket & neww.length > 1) {
+
+
+                console.log(`${neww.length} new tickets!`)
+                GM_notification({title:'Synapse x',text:`There are ${neww.length} new tickets on the support website!`, image:ImageUrl,timeout :4e3})
+
+            }
+            
+            if (Settings.notifications.Reply & responses.length == 1) {
+                let id = responses[0]
+                let box = getBoxFromId(id,newDoc)
+                if (!box) return console.log('Unable to get box from id :'+id);
+                let data = getDataFromBox(box)
+/*                 let data2 = await GetData(id)
+                if (HeardReplies[id] == data2.Responces.Count)
+                HeardReplies[id] = data2.Responces.Count */
+                console.log('sending notif')
+                GM_notification({title:'Synapse x',text:`New reply from ${data.User}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
+
+            } else if (Settings.notifications.Reply & responses.length > 1) {
+
+                GM_notification({title:'Synapse x',text:`There are ${responses.length} new replies on the support website!`, image:ImageUrl,timeout :4e3})
+
+            }
+            if (Settings.notifications.Close) 
+            {
+                for (let Deleted of del) 
+                {
+                    if (!GetData) return;
+                    let data = await GetData(Deleted)
+                    if (data.Agent == GetCurrentAgent() & data.ClosedBy != GetCurrentAgent())
+                    {
+                        GM_notification({title:'Synapse x',text:`${data.User} Closed ${data.Id}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
+                    }
+                }
+            }   
+        }
     }
     //begin
 
@@ -200,8 +202,9 @@ function TICKET_MAIN()
 
 
     //Settings ui
-
-    let buts = document.getElementsByClassName('level')[0].firstElementChild
+    let buts
+    if (CheckForTickets)
+    {buts = document.getElementsByClassName('level')[0].firstElementChild}
     let settingButton = document.createElement('button')
     settingButton.className = 'button'
     settingButton.textContent = 'Settings'
@@ -328,7 +331,7 @@ function TICKET_MAIN()
     window.setInterval( () => refreshing = false,2e3 )
 
     $('#toggleRefreshing').click(() => {GM_setValue('ref',!on); on = !on; console.log(on); document.getElementById('toggleRefreshing').innerHTML = on ? 'Turn off refreshing' : 'Turn on refreshing'})
-
-    CheckForTickets(document)
-
+    if (buts) {
+        CheckForTickets(document)
+    }
 }

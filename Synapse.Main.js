@@ -22,11 +22,10 @@ console.assert(TICKET_MAIN ?? AGENT_MAIN,'It seems that this tampermonkey script
 
 const WebsiteType = window.location.href.match(/https:\/\/synapsesupport\.io\/(?<Type>agent|tickets)/).groups.Type
 
-
-$( () => {
+window.onload = (async () => {
     console.log('LOADING..'+WebsiteType)
     if (WebsiteType == 'tickets') return TICKET_MAIN()
     else if ( WebsiteType == 'agent' ) return AGENT_MAIN()
     console.log(window.location.href,WebsiteType)
     console.log('Wasn\'t able to match this page, contact pozm.')
-})
+}) 

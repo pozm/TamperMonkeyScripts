@@ -77,3 +77,13 @@ function fixTIme(element)
     element.innerHTML = full
 
 }
+
+async function GetCurrentAgent(doc) 
+{
+
+    if (WebsiteType == 'agent') doc = await $.get('https://synapsesupport.io/tickets'); else doc = document
+
+
+    return doc.getElementsByClassName('content')[0].firstElementChild.innerHTML.slice(14,-1).trim()
+
+}
