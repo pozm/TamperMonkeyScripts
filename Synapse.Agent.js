@@ -133,6 +133,7 @@ async function AGENT_MAIN()
         })
 
     }
+    
     // editing style.
     GM_addStyle(`
 
@@ -167,6 +168,7 @@ async function AGENT_MAIN()
         top: -3px;
     }
     `);
+    if (!TICKET_MAIN) return;
     //done
     if (!WebsiteType || WebsiteType != "")
 

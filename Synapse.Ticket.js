@@ -173,6 +173,7 @@ function TICKET_MAIN()
 
     // temp Settings
 
+    if (!AGENT_MAIN) return;
 
     if (!Settings) 
     {
