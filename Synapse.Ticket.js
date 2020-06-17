@@ -312,6 +312,8 @@ function TICKET_MAIN()
 
     })
 
+    GM_setValue('CurrentAgent',GetCurrentAgent())
+
     buts.appendChild(settingButton)
     //refeshing
     let on = GM_getValue('ref') ? GM_getValue('ref') : false

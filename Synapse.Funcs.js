@@ -26,6 +26,7 @@ async function GetData(id)
     Data.Type = children[5].firstElementChild.innerHTML
     Data.Status = children[6].firstElementChild.innerHTML
     Data.Agent = 'Unknown'
+    Data.ClaimedByMe = document.getElementById('querytext').firstElementChild ? false : true
     Data.Responces = {Count : boxes.length-1, res : [] }
 
     for (let boxi in boxes)
@@ -34,7 +35,7 @@ async function GetData(id)
         let box = boxes[boxi]
         if (!box) continue;
         if (!box.firstElementChild) continue;
-        if (box.firstElementChild.className != 'h5') continue;
+        if (box.firstElementChild.tagName  != 'H5') continue;
         Data.Agent = box.firstElementChild.innerHTML != Data.User? box.firstElementChild.innerHTML : Data.Agent
         Data.Responces.res = [...Data.Responces.res, {Responder : box.firstElementChild.innerHTML, Message : box.lastElementChild.innerHTML} ]
 

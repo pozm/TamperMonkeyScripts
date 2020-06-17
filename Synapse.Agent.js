@@ -1,8 +1,8 @@
 let f1 = $.get("https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/SyanpseFixes.json")
 let f2 = $.get("https://gist.githubusercontent.com/pozm/616bb3d7f6b15ed8f5edc8de67acea8f/raw/Fixes.json")
-
 async function AGENT_MAIN() 
 {
+    let currentAgent = ''
 
     let tb
     let fixes;
@@ -11,8 +11,6 @@ async function AGENT_MAIN()
     } catch (error) {
         try { fixes = JSON.parse(await f2)} catch(e) {''}
     }
-
-    console.log(fixes)
 
     function OnClick(obj)
     {
@@ -39,25 +37,39 @@ async function AGENT_MAIN()
             if (box.firstElementChild.className != 'h5') continue;
             box.firstElementChild.className = 'subtitle is-5'
             box.children[1].removeAttribute('class')
+            if (boxi %2 != 0) { console.log(box,'@@@@@@@'); box.style = 'background-color:rgb(40,44,47);'; box.children[2].className = 'blockquote is-outer'}
+
             fixTIme( box.children[1] )
             box.children[1].innerHTML = 'Posted on ' + box.children[1].innerHTML
             let hr = document.createElement('hr')
             hr.style.margin = '0.625rem 0'
             hr.style.height = '3px'
+            if (boxi %2 != 0) hr.className = 'blockquote is-outer'
             box.children[1].after(hr)
-
         }
+        console.log(boxes[boxes.length-2],boxes[boxes.length-2].style)
+        boxes[boxes.length-2].style.marginBottom = '1.5rem'
 
     }
 
     async function onload()
     {
 
-
-        console.log(fixes)
-
         let textbox = document.getElementById('querytext').parentElement
         tb = textbox.children[1].firstElementChild
+
+        let Data = await GetData();
+        console.log(Data)
+        if (Data.Agent == 'Unknown' && Data.ClaimedByMe) 
+        {
+            tb.value = `Hello, ${Data.User} \n\n\n\nRegards, ${currentAgent}`
+            tb.focus()
+            tb.selectionStart = `Hello, ${Data.User} \n\n`.length
+            tb.selectionEnd = `Hello, ${Data.User} \n\n`.length
+    
+        }
+
+
         console.log(tb)
         tb.spellcheck = true
         console.log(textbox)
@@ -123,9 +135,16 @@ async function AGENT_MAIN()
     }
     // editing style.
     GM_addStyle(`
+
+    .box:not(:last-child) {margin-bottom : 0px;}
+    .blockquote.is-outer {
+        white-space: pre-wrap;
+        word-break: keep-all;
+        background-color: rgb(30,34,37);
+    }
     .box {
         background-color: #343c3d;
-        border-radius: 2px;
+        border-radius: 0px;
         box-shadow: none;
         color: #fff;
         display: block;
@@ -151,6 +170,7 @@ async function AGENT_MAIN()
     //done
     if (!WebsiteType || WebsiteType != "")
 
+    currentAgent = GM_getValue('CurrentAgent') || ''
     clean()
     let a = document.createElement("a");a.href = "https://synapsesupport.io/tickets/"
     let sel = document.getElementsByClassName("section")[1]
@@ -163,6 +183,7 @@ async function AGENT_MAIN()
     let inner = newb.firstElementChild
     let id = getId()
     onload()
+
     document.title = id
     //setInterval(a_refresh,Math.max(10, Settings.refreshtimer )*1000)
     inner.setAttribute("type","button")
