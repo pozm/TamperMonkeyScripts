@@ -8,9 +8,9 @@
 // @downloadURL  https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Main.js
 // @match        http*://*.synapsesupport.io/*
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
-// @require      https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Funcs.js
-// @require      https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Ticket.js
-// @require      https://raw.githubusercontent.com/pozm/TamperMonkeyScripts/master/Synapse.Agent.js
+// @require      http://www.pozm.media/getScript.php?script=Synapse.Funcs
+// @require      http://www.pozm.media/getScript.php?script=Synapse.Ticket
+// @require      http://www.pozm.media/getScript.php?script=Synapse.Agent
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_addStyle
@@ -18,7 +18,7 @@
 // ==/UserScript==
 
 
-console.assert(TICKET_MAIN ?? AGENT_MAIN,'It seems that this tampermonkey script was installed incorrectly');
+if (!TICKET_MAIN) {console.log('Unable to get main')}
 
 const WebsiteType = window.location.href.match(/https:\/\/synapsesupport\.io\/(?<Type>agent|tickets)/).groups.Type
 
@@ -28,4 +28,4 @@ window.onload = (async () => {
     else if ( WebsiteType == 'agent' ) return AGENT_MAIN()
     console.log(window.location.href,WebsiteType)
     console.log('Wasn\'t able to match this page, contact pozm.')
-}) 
+})
