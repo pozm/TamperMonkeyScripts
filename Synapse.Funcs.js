@@ -12,7 +12,7 @@ async function GetData(id)
         let res = await $.get(geturl(id))
 
         let domparser = new DOMParser()
-        let html = domparser.parseFromString(res,"text/html")
+        var html = domparser.parseFromString(res,"text/html")
 
         dat = html.getElementsByClassName('section')[1]
         boxes= html.getElementsByClassName('box')
@@ -26,7 +26,10 @@ async function GetData(id)
     Data.Type = children[5].firstElementChild.innerHTML
     Data.Status = children[6].firstElementChild.innerHTML
     Data.Agent = 'Unknown'
-    Data.ClaimedByMe = document.getElementById('querytext').firstElementChild ? false : true
+
+    let gettingBy = WebsiteType != 'agent' ? html.getElementById('querytext') : document.getElementById('querytext');
+
+    Data.ClaimedByMe = gettingBy ? (WebsiteType != 'agent' ? (html.getElementById('querytext').children >= 1 ? false : true) : (document.getElementById('querytext').children >= 1 ? false : true) ) : 'Unknown'
     Data.Responces = {Count : boxes.length-1, res : [] }
 
     for (let boxi in boxes)
