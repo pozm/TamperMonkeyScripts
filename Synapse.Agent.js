@@ -37,7 +37,10 @@ async function AGENT_MAIN()
             if (box.firstElementChild.className != 'h5') continue;
             box.firstElementChild.className = 'subtitle is-5'
             box.children[1].removeAttribute('class')
-            if (boxi %2 != 0) { console.log(box,'@@@@@@@'); box.style = 'background-color:rgb(40,44,47);'; box.children[2].className = 'blockquote is-outer'}
+            if (boxi %2 != 0) {
+                box.style = 'background-color:rgb(40,44,47);';
+                box.children[2].className = 'blockquote is-outer'
+            }
 
             fixTIme( box.children[1] )
             box.children[1].innerHTML = 'Posted on ' + box.children[1].innerHTML
@@ -60,7 +63,7 @@ async function AGENT_MAIN()
 
         let Data = await GetData();
         console.log(Data)
-        if (Data.Agent == 'Unknown' && Data.ClaimedByMe) 
+        if (Data.Agent == 'Unknown' && Data.ClaimedByMe && Data.ClaimedByMe != 'Unknown') 
         {
             tb.value = `Hello, ${Data.User} \n\n\n\nRegards, ${currentAgent}`
             tb.focus()
@@ -180,14 +183,19 @@ async function AGENT_MAIN()
     a.appendChild(sel.children[1])
     let buttons = document.getElementsByClassName("field is-grouped")[0]
     if (!buttons) return console.log('Ticket is closed!')
-    let button = buttons.children[0]
-    let newb = buttons.appendChild(button.cloneNode(true))
-    let inner = newb.firstElementChild
     let id = getId()
     onload()
 
     document.title = id
     //setInterval(a_refresh,Math.max(10, Settings.refreshtimer )*1000)
+
+    let data = await GetData();
+
+    if (data.ClaimedByMe && data.ClaimedByMe != 'Unknown') return;
+
+    let button = buttons.children[0]
+    let newb = buttons.appendChild(button.cloneNode(true))
+    let inner = newb.firstElementChild
     inner.setAttribute("type","button")
     inner.setAttribute("value","Claim")
     inner.setAttribute("class","button is-info")

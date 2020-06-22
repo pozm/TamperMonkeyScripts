@@ -20,7 +20,8 @@
 
 if (!TICKET_MAIN) {console.log('Unable to get main')}
 
-const WebsiteType = window.location.href.match(/https:\/\/synapsesupport\.io\/(?<Type>agent|tickets)/).groups.Type
+const WebsiteType = window.location.href.match(/https:\/\/synapsesupport\.io\/(?<Type>agent|tickets)/)
+    .groups.Type
 
 window.onload = (async () => {
     console.log('LOADING..'+WebsiteType)

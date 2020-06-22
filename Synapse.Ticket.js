@@ -29,11 +29,18 @@ function TICKET_MAIN()
         let Opened = box.children[2].firstElementChild
         let LastUpdated = box.children[3].firstElementChild
 
-        return {Id : id, User : User, TicketType: TicketType, Agent : agent, Opened : Opened, LastUpdate : LastUpdated, Responded : HasResponded}
+        return {
+            Id : id,
+            User : User,
+            TicketType: TicketType,
+            Agent : agent, Opened : Opened,
+            LastUpdate : LastUpdated,
+            Responded : HasResponded
+        }
     }
 
     /**
-     * 
+     *
      * @param {String} id The id of the box
      * @param {Document} doc The current document you want to perform the search on.
      */
@@ -59,10 +66,14 @@ function TICKET_MAIN()
             let newBoxes = [] // incase theres a new document
 
 
-            if (newDoc && WebsiteType)  newBoxes = [...newDoc.getElementsByClassName("columns is-mobile is-multiline")].filter(v => v.className != 'columns is-mobile is-multiline Dont-fuck-with') // checks if its checking against a new document -- also make sure its not a closed ticket section
+            if (newDoc && WebsiteType)  newBoxes =
+                [...newDoc.getElementsByClassName("columns is-mobile is-multiline")]
+                    .filter(v => v.className != 'columns is-mobile is-multiline Dont-fuck-with') // checks if its checking against a new document -- also make sure its not a closed ticket section
             let boxesb = [...doc.getElementsByClassName("columns is-mobile is-multiline")] // current boxes
             if (newDoc) for (let newi in newBoxes) {boxesb[newi].parentNode.replaceChild(newBoxes[newi],boxesb[newi])} // update the old boxes with new ones
-            let boxes = newDoc? [...newBoxes[0].children,...newBoxes[1].children] : [...boxesb[0].children,...boxesb[1].children] // determine which boxes to look through
+            let boxes = newDoc?
+                [...newBoxes[0].children,...newBoxes[1].children] :
+                [...boxesb[0].children,...boxesb[1].children] // determine which boxes to look through
 
 
             for (let boxi in boxes) // typical for loop
@@ -122,17 +133,32 @@ function TICKET_MAIN()
                 if (Settings.notifications.IgnoreTypes.includes( data.TicketType)) return;
                 console.log('Ticket URL :',geturl(data.Id))
                 if (Settings.autoClaim) $.get('https://synapsesupport.io/api/claim.php?id='+data.Id)
-                GM_notification({title:'Synapse x',text:`New support ticket! ${data.Id} from ${data.User}${Settings.autoClaim ? ' And automatically claimed it!' : ''}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
+                GM_notification(
+                    {
+                        title:'Synapse x',
+                        text:`New support ticket! ${data.Id} from ${data.User}${Settings.autoClaim ? 
+                            ' And automatically claimed it!' : 
+                            ''}`,
+                        onclick: () =>{
+                            window.open(geturl(data.Id)) },
+                        image:ImageUrl,
+                        timeout :7e3
+                    })
                 console.log('New!')
 
             } else if (Settings.notifications.NewTicket && neww.length > 1) {
 
 
                 console.log(`${neww.length} new tickets!`)
-                GM_notification({title:'Synapse x',text:`There are ${neww.length} new tickets on the support website!`, image:ImageUrl,timeout :4e3})
+                GM_notification(
+                    {title:'Synapse x',
+                        text:`There are ${neww.length} new tickets on the support website!`,
+                        image:ImageUrl,
+                        timeout :4e3
+                    })
 
             }
-            
+
             if (Settings.notifications.Reply && responses.length == 1) {
                 let id = responses[0]
                 let box = getBoxFromId(id,newDoc)
@@ -142,35 +168,59 @@ function TICKET_MAIN()
                 if (HeardReplies[id] == data2.Responces.Count)
                 HeardReplies[id] = data2.Responces.Count */
                 console.log('sending notif')
-                GM_notification({title:'Synapse x',text:`New reply from ${data.User}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
+                GM_notification(
+                    {
+                        title:'Synapse x',
+                        text:`New reply from ${data.User}`,
+                        onclick: () =>{ window.open(geturl(data.Id)) },
+                        image:ImageUrl,
+                        timeout :7e3})
 
             } else if (Settings.notifications.Reply && responses.length > 1) {
 
-                GM_notification({title:'Synapse x',text:`There are ${responses.length} new replies on the support website!`, image:ImageUrl,timeout :4e3})
+                GM_notification(
+                    {
+                        title:'Synapse x'
+                        ,text:`There are ${responses.length} new replies on the support website!`,
+                        image:ImageUrl,
+                        timeout :4e3})
 
             }
-            if (Settings.notifications.Close) 
+            if (Settings.notifications.Close)
             {
-                for (let Deleted of del) 
+                for (let Deleted of del)
                 {
                     if (!GetData) return;
                     let data = await GetData(Deleted)
                     if (data.Agent == GetCurrentAgent() & data.ClosedBy != GetCurrentAgent())
                     {
-                        GM_notification({title:'Synapse x',text:`${data.User} Closed ${data.Id}`,onclick: () =>{ window.open(geturl(data.Id)) }, image:ImageUrl,timeout :7e3})
+                        GM_notification(
+                            {
+                                title:'Synapse x',
+                                text:`${data.User} Closed ${data.Id}`,
+                                onclick: () =>{ window.open(geturl(data.Id)) },
+                                image:ImageUrl,
+                                timeout :7e3
+                            })
                     }
-                } 
-            }   
+                }
+            }
         }
     }
     //begin
 
 
     // checks if they have ran this script before.
-    if (!GM_getValue('ran')) GM_notification({title:'Synapse x Script',text:`It seems like this is your first time using this script, make sure to enable refreshing to get notifications on new tickets.`,timeout :7e3})
+    if (!GM_getValue('ran')) GM_notification(
+        {
+            title:'Synapse x Script',
+            text:`It seems like this is your first time using this script, make sure to enable refreshing to get notifications on new tickets.`,
+            timeout :7e3
+        })
     GM_setValue('ran',true)
 
-    document.getElementsByClassName('content')[0].firstElementChild.after('Using pozm\'s tampermonkey script :)')// don't delete, atleast let me have some credit :(
+    document.getElementsByClassName('content')[0]
+        .firstElementChild.after('Using pozm\'s tampermonkey script :)')// don't delete, atleast let me have some credit :(
 
     // changes the styles on this page and adds some extra ones.
 
@@ -229,8 +279,17 @@ function TICKET_MAIN()
         Settings = {}
         Settings.uncapTickets = true
         Settings.locale = 'en-GB';
-        Settings.refreshtimer = 10; 
-        Settings.notifications = {NewTicket:true,Reply:true,Close:true, IgnoreTypes : ['Blacklist/Ban Appeal','Email Change Request']}
+        Settings.refreshtimer = 10;
+        Settings.notifications = {
+            NewTicket:true,
+            Reply:true,
+            Close:true,
+            IgnoreTypes :
+                [
+                    'Blacklist/Ban Appeal',
+                    'Email Change Request'
+                ]
+        }
         GM_setValue('SETTINGS',Settings) // save settings
         console.log('Created new Settings.')
     }
@@ -255,7 +314,8 @@ function TICKET_MAIN()
     let buts
     if (CheckForTickets)// checks if check for tickets func exists.
     {
-        buts = document.getElementsByClassName('level')[0].firstElementChild
+        buts = document.getElementsByClassName('level')[0]
+            .firstElementChild
     }
     let settingButton = document.createElement('button') // creates the settings button
     settingButton.className = 'button' // changes properties about it
@@ -310,7 +370,8 @@ function TICKET_MAIN()
     
             </div>
         </div>`
-        let parsedsettings = (new DOMParser().parseFromString(settingsData,'text/html')).body.firstElementChild // parse the string into HTML dom object.
+        let parsedsettings = (new DOMParser().parseFromString(settingsData,'text/html'))
+            .body.firstElementChild // parse the string into HTML dom object.
 
         document.body.firstElementChild.before(parsedsettings) // place it at the top.
 
@@ -341,11 +402,20 @@ function TICKET_MAIN()
             console.log(set)
             set.addEventListener('change', (event) => // ran on change
             {
-                let newval = event.target.type === 'checkbox' ?event.target.checked:event.target.value
-                console.log(event.target.name == 'Notifications' ? Settings.notifications : Settings[event.target.name],event.target.id,newval)
-                if (event.target.name == 'Notifications') Settings.notifications[event.target.id] = newval; else Settings[event.target.name] = newval
+                let newval = event.target.type === 'checkbox' ?
+                    event.target.checked:
+                    event.target.value
+                console.log(event.target.name == 'Notifications' ?
+                    Settings.notifications :
+                    Settings[event.target.name],
+                    event.target.id,
+                    newval)
+                if (event.target.name == 'Notifications') Settings.notifications[event.target.id] = newval;
+                else Settings[event.target.name] = newval
                 GM_setValue('SETTINGS',Settings)
-                console.log(event.target.name == 'Notifications' ? Settings.notifications[event.target.id] : Settings[event.target.name],event.target.id,newval)
+                console.log(event.target.name == 'Notifications' ?
+                    Settings.notifications[event.target.id] :
+                    Settings[event.target.name],event.target.id,newval)
 
             })
 
@@ -386,10 +456,10 @@ function TICKET_MAIN()
 
     let closed = GM_getValue('Deleted_Tickets')
 
-    if (closed) 
+    if (closed)
     {
 
-        for (let data of Object.values(closed) ) 
+        for (let data of Object.values(closed) )
         {
 
             let obox = document.createElement('div');
@@ -397,7 +467,7 @@ function TICKET_MAIN()
             obox.className = 'column is-one-third-desktop is-half-tablet is-fullwidth-mobile'
             box.className = 'box'
 
-            
+
             let idE     = document.createElement('h5');
             let timeE   = document.createElement('h5');
             let typeE   = document.createElement('h5');
@@ -446,7 +516,7 @@ function TICKET_MAIN()
             div.appendChild(obox)
         }
 
-    } 
+    }
 
 
 
@@ -454,7 +524,7 @@ function TICKET_MAIN()
     //refeshing
     let on = GM_getValue('ref') ? GM_getValue('ref') : false // checks if enabled from stored data
     const UpdateBody = () => { // func is ran ever ~10 - timer you set
-        console.log(on) 
+        console.log(on)
         if (!on) return // if refreshing is disabled then don't do anything
         console.log('updating..')
         $.get('https://synapsesupport.io/tickets/', (res,status) => { // get data from the same website
@@ -468,7 +538,15 @@ function TICKET_MAIN()
     window.setInterval( UpdateBody, ( Math.max(10, Settings.refreshtimer )*1000) ) // set interval to do the updateBody func
     window.setInterval( () => refreshing = false,2e3 ) // makes sure that the default refreshing doesn't interfere
 
-    $('#toggleRefreshing').click(() => {GM_setValue('ref',!on); on = !on; console.log(on); document.getElementById('toggleRefreshing').innerHTML = on ? 'Turn off refreshing' : 'Turn on refreshing'}) // changes data when refresh button is pressed.
+    $('#toggleRefreshing').click(() => {
+        GM_setValue('ref',!on);
+        on = !on;
+        console.log(on);
+        document.getElementById('toggleRefreshing')
+            .innerHTML = on ?
+            'Turn off refreshing' :
+            'Turn on refreshing'
+    }) // changes data when refresh button is pressed.
     if (buts) {
         CheckForTickets(document) // check for tickets.
     }
