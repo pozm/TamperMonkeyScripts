@@ -16,7 +16,9 @@ async function GetData(id)
 
         dat = html.getElementsByClassName('section')[1]
         boxes= html.getElementsByClassName('box')
-    } else {dat = document.getElementsByClassName('section')[1]; boxes= document.getElementsByClassName('box') }
+    } else {
+        dat = document.getElementsByClassName('section')[1];
+        boxes= document.getElementsByClassName('box') }
     if (!dat) return 
     let children = dat.children;
 
@@ -27,9 +29,21 @@ async function GetData(id)
     Data.Status = children[6].firstElementChild.innerHTML
     Data.Agent = 'Unknown'
 
-    let gettingBy = WebsiteType != 'agent' ? html.getElementById('querytext') : document.getElementById('querytext');
+    let gettingBy = WebsiteType != 'agent' ?
+        html.getElementById('querytext')
+        :
+        document.getElementById('querytext');
 
-    Data.ClaimedByMe = gettingBy ? (WebsiteType != 'agent' ? (html.getElementById('querytext').children >= 1 ? false : true) : (document.getElementById('querytext').children >= 1 ? false : true) ) : 'Unknown'
+    Data.ClaimedByMe = gettingBy ?
+        (WebsiteType != 'agent' ?
+            (html.getElementById('querytext').firstElementChild)
+            :
+            (document.getElementById('querytext').firstElementChild ?
+                false
+                :
+                true)
+        )
+        : 'Unknown'
     Data.Responces = {Count : boxes.length-1, res : [] }
 
     for (let boxi in boxes)
@@ -40,7 +54,14 @@ async function GetData(id)
         if (!box.firstElementChild) continue;
         if (box.firstElementChild.tagName  != 'H5') continue;
         Data.Agent = box.firstElementChild.innerHTML != Data.User? box.firstElementChild.innerHTML : Data.Agent
-        Data.Responces.res = [...Data.Responces.res, {Responder : box.firstElementChild.innerHTML, Message : box.lastElementChild.innerHTML} ]
+        Data.Responces.res =
+            [
+                ...Data.Responces.res,
+                {
+                    Responder : box.firstElementChild.innerHTML,
+                    Message : box.lastElementChild.innerHTML
+                }
+            ]
 
     }
     let filter = Data.Responces.res.filter((v) => v.Message.startsWith("Ticket closed by"))
@@ -72,7 +93,9 @@ function fixTIme(element)
     let timed = time.match(timeregex)
     if (!timed) return
     timed.groups.hours = timed.groups.hours == '12'? 0 : timed.groups.hours
-    timed.groups.hours = timed.groups.meridian == 'PM'? parseInt(timed.groups.hours,10)+12 : parseInt(timed.groups.hours,10)
+    timed.groups.hours = timed.groups.meridian == 'PM'?
+        parseInt(timed.groups.hours,10)+12 :
+        parseInt(timed.groups.hours,10)
     let newtime = `${timed.groups.month} ${timed.groups.day} ${timed.groups.year} ${timed.groups.hours}:${timed.groups.minutes}:${timed.groups.seconds} GMT-0400`
     let timeparsed = new Date( Date.parse(newtime))
     let datestring = timeparsed.toLocaleString(Settings.locale)
