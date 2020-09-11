@@ -15,25 +15,30 @@ const GenerateFix = async (Issue, causedBy, SFFix, IFix , type) => {
 
 
     let fix = { 'CausedBy' : causedBy, 'SupportFriendlyFix': SFFix, 'InstructionalFix' : IFix, 'Last Update' : Date.now(), 'TypeOfFix':type}
-    rl.question(`Should i save \n`+JSON.stringify(fix,null,4)+`?\n\ny / n\n`, (aws) => {
 
-        if (aws != 'y') return rl.close();
+    return new Promise((resolve=>{
 
-        Parsed.Fixes[Issue] = fix;
-        let ReStringified = JSON.stringify(Parsed,null,4);
-        
-        fs.writeFileSync('./SyanpseFixes.json',ReStringified);
-        console.log('Done.')
-        rl.close();
+        rl.question(`Should i save \n`+JSON.stringify(fix,null,4)+`?\n\ny / n\n`, (aws) => {
 
-    })
+            if (aws != 'y') return rl.close();
+
+            Parsed.Fixes[Issue] = fix;
+            let ReStringified = JSON.stringify(Parsed,null,4);
+            
+            fs.writeFileSync('./SyanpseFixes.json',ReStringified);
+            console.log('Done.')
+            rl.close();
+            resolve('')
+
+        })
+    }))
 }
 
 
 
 // checking status
-
-/* GenerateFix(
+(async()=>{
+await GenerateFix(
     
     // issue
     `Stuck at "Checking status"`, 
@@ -50,7 +55,7 @@ Could you check if you have any antivirus enabled? If so could you please uninst
 You can access control panel by pressing win + r then typing "appwiz.cpl" This will show all currently installed programs, if you're not sure if you have any please send screenshots showing the whole panel. (You must upload to a image hosting site (e.g. imgur) then paste it in a reply).
 
 
-After you have confirmed that you have no antiviruses still enabled could you try downloading and installing protonvpn (https://protonvpn.com/download), This is a free vpn which you can use. This step is neccessary incase your vps is blocking the connection between SynapseX and it's servers.
+After you have confirmed that you have no antiviruses still enabled could you try downloading and installing protonvpn (https://protonvpn.com/download), This is a free vpn which you can use. This step is neccessary incase your isp is blocking the connection between SynapseX and it's servers.
 
 If That step also didn't work could you check your windows version? And check that its updated To be safe you can use this tool made by microsoft to download the most recent update. https://www.microsoft.com/en-gb/software-download/windows10`,
 
@@ -69,10 +74,10 @@ Fix 5: Make sure windows 10 is updated.`,
     // type of fix
     'ACTUAL' 
 
-) */
+)
 
 
-/* GenerateFix(
+await GenerateFix(
 
     'Failed to download bootstrapper',
 
@@ -84,7 +89,7 @@ Fix 5: Make sure windows 10 is updated.`,
     You can access control panel by pressing win + r then typing "appwiz.cpl" This will show all currently installed programs, if you're not sure if you have any please send screenshots showing the whole panel. (You must upload to a image hosting site (e.g. imgur) then paste it in a reply).
     
     
-    After you have confirmed that you have no antiviruses still enabled could you try downloading and installing protonvpn (https://protonvpn.com/download), This is a free vpn which you can use. This step is neccessary incase your vps is blocking the connection between SynapseX and it's servers.`,
+    After you have confirmed that you have no antiviruses still enabled could you try downloading and installing protonvpn (https://protonvpn.com/download), This is a free vpn which you can use. This step is neccessary incase your isp is blocking the connection between SynapseX and it's servers.`,
 
     `Fix 1: Ensure there is no antivirus interfering with the installation of Synapse. Uninstall/Disable any and all antivirus software including real time protection within windows defender.
 
@@ -97,10 +102,10 @@ Fix 4: Make sure the users operating system is up to date`,
     'ACTUAL'
 
 
-) */
+)
 
 /* 
-GenerateFix(
+await GenerateFix(
 
     'Discord invite',
 
@@ -114,7 +119,7 @@ GenerateFix(
 )
  */
 
-/* GenerateFix(
+/* await GenerateFix(
 
     'C2-2',
     'Malware infecting discord.',
@@ -125,17 +130,17 @@ GenerateFix(
 
 ) */
 
-/* GenerateFix(
+await GenerateFix(
 
     'Black box',
     'Missing VC Redist libaries.',
-    `Could you download and install vc redist. You will need both x64 and x86, You can find the download for both of them here:\nhttps://aka.ms/vs/16/release/vc_redist.x86.exe\nhttps://aka.ms/vs/16/release/vc_redist.x64.exe\n\nOnce you've installe both of them reboot your pc.\n\nAfter rebooting delete bin and run synapse x.exe as admin`,
+    `Could you download and install vc redist. You will need both x64 and x86, You can find the download for both of them here:\nhttps://aka.ms/vs/16/release/vc_redist.x86.exe\nhttps://aka.ms/vs/16/release/vc_redist.x64.exe\n\nOnce you've installed both of them reboot your pc.\n\nAfter rebooting delete bin and run synapse x.exe as admin`,
     'Get the user to download VC redist from https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads .',
     'ACTUAL'
 
-) */
+)
 
-/* GenerateFix(
+/* await GenerateFix(
 
     'User account',
     'NA',
@@ -145,7 +150,7 @@ GenerateFix(
 
 ) */
 
-/* GenerateFix(
+/* await GenerateFix(
 
     'Injection crash',
     'Antivirus blocking synapse, or messed up windows account',
@@ -158,7 +163,7 @@ GenerateFix(
 
 ) */
 
-/* GenerateFix(
+/* await GenerateFix(
     
     'Inactive',
     'NA',
@@ -169,13 +174,13 @@ GenerateFix(
 ) */
 
 
-/* GenerateFix(
+await GenerateFix(
 
     'Javascript Error',
     'faulty install of synapse X or messed up windows account, or ISP issues',
 `Before trying any fixes it's recommended to delete the synapse folder and then reinstall it, heres a video to help you install synapse properly if you're not sure. https://youtu.be/FF3xK087USQ
 
-After you have confirmed that you have no antiviruses still enabled could you try downloading and installing protonvpn (https://protonvpn.com/download), This is a free vpn which you can use. This step is neccessary incase your vps is blocking the connection between SynapseX and it's servers.
+After you have confirmed that you have no antiviruses still enabled could you try downloading and installing protonvpn (https://protonvpn.com/download), This is a free vpn which you can use. This step is necessary incase your isp is blocking the connection between SynapseX and it's servers.
     
 If neither fix worked could you create a new windows user account which is an admin, you can find a guide on how to do that here:\nhttps://support.microsoft.com/en-gb/help/4026923/windows-10-create-a-local-user-or-administrator-account
     `,
@@ -186,11 +191,11 @@ Fix 3. Have the buyer create a new windows user account.
     `,
     'ACTUAL'
 
-) */
+)
 
 
-/*
-GenerateFix(
+
+await GenerateFix(
 
     'Injection stuck',
     `one or more of 4 things, These four things conclude:
@@ -200,7 +205,7 @@ GenerateFix(
 Could you check if you have any antivirus enabled? If so could you please uninstall them as they will most likely interfere with synapse working, Before saying that you already know that they're disabled please confirm by checking in control panel.
 You can access control panel by pressing win + r then typing "appwiz.cpl" This will show all currently installed programs, if you're not sure if you have any please send screenshots showing the whole panel. (You must upload to a image hosting site (e.g. imgur) then paste it in a reply).
 
-After you have confirmed that you have no antiviruses still enabled could you try downloading and installing protonvpn (https://protonvpn.com/download), This is a free vpn which you can use. This step is neccessary incase your vps is blocking the connection between SynapseX and it's servers.
+After you have confirmed that you have no antiviruses still enabled could you try downloading and installing protonvpn (https://protonvpn.com/download), This is a free vpn which you can use. This step is necessary incase your isp is blocking the connection between SynapseX and it's servers.
     `,
 
     `Fix 1: Ensure there is no antivirus interfering with the installation of Synapse. Uninstall/Disable any and all antivirus software including real time protection within windows defender.
@@ -213,4 +218,5 @@ Fix 3: Sometimes a user does not install Synapse correctly which can lead to suc
     'ACTUAL'
 
 
-)*/
+)
+})()

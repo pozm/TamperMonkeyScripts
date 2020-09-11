@@ -218,7 +218,7 @@ function TICKET_MAIN() // ran on ticket pages
                 let data = getDataFromBox(box) // gets the data for that box
                 box.id = data.Id
                 ids = [...ids,data.Id]
-                if (data.Responded) responses = [...responses,data.Id]
+                if (data.Responded) responses = [...responses,data]
                 fixTIme( data.Opened )
                 fixTIme( data.LastUpdate )
             }
@@ -232,7 +232,7 @@ function TICKET_MAIN() // ran on ticket pages
             for (let id of del)
             {
 
-                console.log('running through',id)
+/*                console.log('running through',id)
 
                 let data = await GetData(id)
                 data.ClosedAt = new Date();
@@ -240,7 +240,7 @@ function TICKET_MAIN() // ran on ticket pages
                 {
                     console.log('slave')
                     map = {...map,[data.Id]:data}
-                } else console.log('nigger')
+                } else console.log('nigger')*/
 
             }
 
@@ -710,6 +710,7 @@ async function AGENT_MAIN() // ran upon agent load
         let target = obj.target // what button
         var caretPos = tb.selectionStart; // get the current position in tb
         var textAreaTxt = tb.value // get the txt
+        var textBefore = textAreaTxt.substring(0,  cursorPos);
         var txtToAdd = fixes.Fixes[target.innerHTML].SupportFriendlyFix; // get the fix
         tb.value  = textAreaTxt.substring(0, caretPos) + txtToAdd + textAreaTxt.substring(caretPos) // append the fix to cursor location
         tb.focus() // focus back on the textbox.
